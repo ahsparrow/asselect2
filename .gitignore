@@ -2,3 +2,6 @@ __pycache__
 *.pyc
 
 yaixm.json
+
+node_modules
+package-lock.json
