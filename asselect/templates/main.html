@@ -1,0 +1,122 @@
+{% macro option(setting, value, text) %}
+  {% if setting == value %}
+    <option value="{{value}}" selected>{{text}}</option>
+  {% else %}
+    <option value="{{value}}">{{text}}</option>
+  {% endif %}
+{% endmacro %}
+
+<div class="box">
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">ATZ:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="atz">
+              {{option(settings.get("atz"), "ctr", "Control Zone")}}
+              {{option(settings.get("atz"), "classd", "Class D")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">ILS Feather:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="ils">
+              {{option(settings.get("ils"), "atz", "Az ATZ")}}
+              {{option(settings.get("ils"), "classf", "Class F")}}
+              {{option(settings.get("ils"), "classg", "Class G")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Non-ATZ Airfield:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="noatz">
+              {{option(settings.get("noatz"), "exclude", "Exclude")}}
+              {{option(settings.get("noatz"), "classf", "Class F")}}
+              {{option(settings.get("noatz"), "classg", "Class G")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Microlight Airfield:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="ul">
+              {{option(settings.get("ul"), "exclude", "Exclude")}}
+              {{option(settings.get("ul"), "classf", "Class F")}}
+              {{option(settings.get("ul"), "classg", "Class G")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Gliding Airfield:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="glider">
+              {{option(settings.get("glider"), "exclude", "Exclude")}}
+              {{option(settings.get("glider"), "gsec", "Gliding Sector")}}
+              {{option(settings.get("glider"), "classf", "Class F")}}
+              {{option(settings.get("glider"), "classg", "Class G")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Exclude Home Airfield:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="home">
+              {{option(settings.get("home"), "none", "None")}}
+              {% for gs in gliding_sites %}
+                {{option(settings.get("home"), gs, gs)}}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Append Radio Frequency:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="radio">
+              {{option(settings.get("radio"), "no", "No")}}
+              {{option(settings.get("radio"), "yes", "Yes")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

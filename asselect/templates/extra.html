@@ -1,0 +1,24 @@
+<div class="card block">
+  <div class="card block">
+    <header class="card-header is-clickable"}>
+      <level class="card-header-title">
+        <p>Temporary Restrictions, RA(T)</p>
+      </level>
+    </header>
+
+    <div class="card-content">
+      <div class="columns is-multiline">
+        {% for rat in rats %}
+          <div class="column is-one-third">
+            <div class="field">
+            <label class="checkbox">
+              <input type="checkbox" class="mr-1" name="rat-{{rat}}" />
+              {{rat}}
+            </label>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

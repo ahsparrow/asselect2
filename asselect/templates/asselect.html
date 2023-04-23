@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="UK Airspace data">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <title>ASSelect UK</title>
+</head>
+
+<body>
+  <header class="hero is-small is-primary block">
+    <div class="hero-body">
+      <div class="container">
+        <div class="title is-4">
+          ASSelect - UK Airspace
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <form action="/download" method="get">
+    <div class="container block">
+      <div class="tabs" id="tabs">
+        <ul>
+          <li class="is-active" data-tab="main"><a>Main</a></li>
+          <li data-tab="option"><a>Option</a></li>
+          <li data-tab="extra"><a>Extra</a></li>
+          <li data-tab="notam"><a>NOTAM</a></li>
+          <li data-tab="about"><a>About</a></li>
+        </ul>
+      </div>
+
+      <div id="tab-content">
+        <div data-content="main">
+          {% include "main.html" %}
+        </div>
+        <div data-content="option" hidden>
+          Option
+        </div>
+        <div data-content="extra" hidden>
+          {% include "extra.html" %}
+        </div>
+        <div data-content="notam" hidden>
+          NOTAM
+        </div>
+        <div data-content="about" hidden>
+          About
+        </div>
+      </div>
+    </div>
+
+    <div class="container block">
+      <div class="mx-4">
+        <button class="button is-primary">
+          Save
+        </button>
+        <a type="submit" class="button is-text is-pulled-right">
+          Help
+        </a>
+      </div>
+    </div>
+  </form>
+
+<script>
+  // Tab control
+  document.querySelectorAll("#tabs li").forEach((tab) => {
+    tab.addEventListener("click", (e) => {
+      const data = tab.getAttribute("data-tab");
+
+      // Set active tab
+      document.querySelectorAll("#tabs li").forEach((tab) => {
+        tab.classList.remove("is-active");
+      });
+      tab.classList.add("is-active");
+
+      // Set active content
+      document.querySelectorAll("#tab-content > div").forEach((item) => {
+        item.hidden = true;;
+      });
+      document.querySelector(`div[data-content="${data}"]`).hidden = false;
+    });
+  });
+</script>
+
+</body>
