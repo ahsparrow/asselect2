@@ -13,7 +13,9 @@ def index():
         "asselect.html",
         settings=settings,
         gliding_sites=current_app.config["GLIDING_SITES"],
+        loas=current_app.config["LOAS"],
         rats=current_app.config["RATS"],
+        wave_boxes=current_app.config["WAVE_BOXES"],
     )
 
 

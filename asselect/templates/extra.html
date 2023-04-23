@@ -1,12 +1,10 @@
-<div class="card block">
+<div id="extra_blocks">
   <div class="card block">
-    <header class="card-header is-clickable"}>
-      <level class="card-header-title">
-        <p>Temporary Restrictions, RA(T)</p>
-      </level>
+    <header class="card-header is-clickable" data-card="rat"}>
+      <p class="card-header-title">Temporary Restrictions, RA(T)</p>
     </header>
 
-    <div class="card-content">
+    <div class="card-content" data-card="rat">
       <div class="columns is-multiline">
         {% for rat in rats %}
           <div class="column is-one-third">
@@ -21,4 +19,58 @@
       </div>
     </div>
   </div>
+
+  <div class="card block">
+    <header class="card-header is-clickable" data-card="loa">
+      <p class="card-header-title">Local Agreements</p>
+    </header>
+
+    <div class="card-content" hidden data-card="loa">
+      <div class="columns is-multiline">
+        {% for loa in loas %}
+          <div class="column is-one-third">
+            <div class="field">
+            <label class="checkbox">
+              <input type="checkbox" class="mr-1" name="loa-{{loa}}" />
+              {{loa}}
+            </label>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card block">
+    <header class="card-header is-clickable"} data-card="wave">
+      <p class="card-header-title">Wave Boxes</p>
+    </header>
+
+    <div class="card-content" hidden data-card="wave">
+      <div class="columns is-multiline">
+        {% for wave_box in wave_boxes %}
+          <div class="column is-one-third">
+            <div class="field">
+            <label class="checkbox">
+              <input type="checkbox" class="mr-1" name="wave-{{wave_box}}" />
+              {{wave_box}}
+            </label>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll(".card-header").forEach((header) => {
+      header.addEventListener("click", (e) => {
+        document.querySelectorAll(".card-content").forEach((card) => {
+            card.hidden = (card.getAttribute("data-card") != header.getAttribute("data-card"));
+        });
+      });
+    });
+  });
+</script>
