@@ -1,0 +1,91 @@
+{% macro option(setting, value, text) %}
+  {% if setting == value %}
+    <option value="{{value}}" selected>{{text}}</option>
+  {% else %}
+    <option value="{{value}}">{{text}}</option>
+  {% endif %}
+{% endmacro %}
+
+<div class="box">
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Format:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="format">
+              {{option(settings.get("format"), "openair", "OpenAir")}}
+              {{option(settings.get("format"), "ratonly", "RA(T) Only")}}
+              {{option(settings.get("format"), "competition", "Competition")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Maximum Level:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="maxlevel">
+              {{option(settings.get("maxlevel"), "unlimited", "Unlimited")}}
+              {{option(settings.get("maxlevel"), "fl195", "FL195")}}
+              {{option(settings.get("maxlevel"), "fl105", "FL105")}}
+              {{option(settings.get("maxlevel"), "fl65", "FL65")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">HIRTA/GVS:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="hirta">
+              {{option(settings.get("hirta"), "exclude", "Exclude")}}
+              {{option(settings.get("hirta"), "danger", "Danger")}}
+              {{option(settings.get("hirta"), "restricted", "Restricted")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Obstacle:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="obstacle">
+              {{option(settings.get("obstacle"), "exclude", "Exclude")}}
+              {{option(settings.get("obstacle"), "classf", "Class F")}}
+              {{option(settings.get("obstacle"), "classg", "Class G")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column is-one-third">
+      <div class="field">
+        <label class="label is-small">Altitude Overlay:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="overlay">
+              {{option(settings.get("overlay"), "exclude", "Exclude")}}
+              {{option(settings.get("overlay"), "fl105", "Up to FL105")}}
+              {{option(settings.get("overlay"), "fl195", "Up to FL195")}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
