@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, current_app, make_response, render_template, request
 
-bp = Blueprint("index", __name__)
+bp = Blueprint("blueprint", __name__)
 
 
 @bp.route("/")

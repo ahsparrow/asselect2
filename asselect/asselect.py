@@ -4,7 +4,7 @@ import tomllib
 
 from flask import Flask
 
-import asselect.blueprints.index
+import asselect.blueprint
 
 
 def load_yaixm(app, yaixm_file):
@@ -37,7 +37,7 @@ def create_app(config):
     app = Flask("asselect")
     load_yaixm(app, config["yaixm_file"])
 
-    app.register_blueprint(asselect.blueprints.index.bp)
+    app.register_blueprint(asselect.blueprint.bp)
 
     # Remove template whitespace
     app.jinja_env.lstrip_blocks = True
