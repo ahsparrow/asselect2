@@ -10,7 +10,7 @@
           <div class="column is-one-third">
             <div class="field">
             <label class="checkbox">
-              <input type="checkbox" class="mr-1" name="rat-{{rat}}" />
+              <input type="checkbox" class="mr-1" name="rat-{{rat}}" value="" {{"checked" if ("rat-" ~ rat) in settings}}/>
               {{rat}}
             </label>
             </div>
@@ -31,7 +31,7 @@
           <div class="column is-one-third">
             <div class="field">
             <label class="checkbox">
-              <input type="checkbox" class="mr-1" name="loa-{{loa}}" />
+              <input type="checkbox" class="mr-1" name="loa-{{loa}}"  {{"checked" if ("loa-" ~ loa) in settings}}/>
               {{loa}}
             </label>
             </div>
@@ -48,12 +48,12 @@
 
     <div class="card-content" hidden data-card="wave">
       <div class="columns is-multiline">
-        {% for wave_box in wave_boxes %}
+        {% for wave in wave_boxes %}
           <div class="column is-one-third">
             <div class="field">
             <label class="checkbox">
-              <input type="checkbox" class="mr-1" name="wave-{{wave_box}}" />
-              {{wave_box}}
+              <input type="checkbox" class="mr-1" name="wave-{{wave}}"  {{"checked" if ("wave-" ~ wave) in settings}}/>
+              {{wave}}
             </label>
             </div>
           </div>
