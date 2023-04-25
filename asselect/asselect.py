@@ -10,6 +10,7 @@ import asselect.blueprint
 def load_yaixm(app, yaixm_file):
     yaixm = json.load(open(yaixm_file))
 
+    app.config["YAIXM"] = yaixm
     app.config["RATS"] = [rat["name"] for rat in yaixm["rat"]]
     app.config["LOAS"] = [loa["name"] for loa in yaixm["loa"] if not loa.get("default")]
     app.config["WAVE_BOXES"] = sorted(

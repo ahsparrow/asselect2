@@ -380,7 +380,7 @@ def openair(
 
     # Filter airspace
     airspace = list(
-        filter(make_filter(types, max_level, home, wave=wave_names), airspace)
+        filter(make_filter(types, max_level, home, wave_names), airspace)
     )
 
     # Merge frequencies
@@ -438,7 +438,7 @@ if __name__ == "__main__":
         "noatz": "F",
         "ul": "",
         "hirta": "",
-        "glider": "GSEC",
+        "glider": "W",
         "obstacle": "G",
     }
 
