@@ -14,8 +14,8 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="atz">
-              {{option(settings.get("atz"), "ctr", "Control Zone")}}
-              {{option(settings.get("atz"), "classd", "Class D")}}
+              {{option(settings.get("atz"), "CTR", "Control Zone")}}
+              {{option(settings.get("atz"), "D", "Class D")}}
             </select>
           </div>
         </div>
@@ -28,9 +28,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="ils">
-              {{option(settings.get("ils"), "atz", "Az ATZ")}}
-              {{option(settings.get("ils"), "classf", "Class F")}}
-              {{option(settings.get("ils"), "classg", "Class G")}}
+              {{option(settings.get("ils"), "ATZ", "Az ATZ")}}
+              {{option(settings.get("ils"), "F", "Class F")}}
+              {{option(settings.get("ils"), "G", "Class G")}}
             </select>
           </div>
         </div>
@@ -45,9 +45,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="noatz">
-              {{option(settings.get("noatz"), "exclude", "Exclude")}}
-              {{option(settings.get("noatz"), "classf", "Class F")}}
-              {{option(settings.get("noatz"), "classg", "Class G")}}
+              {{option(settings.get("noatz"), "", "Exclude")}}
+              {{option(settings.get("noatz"), "F", "Class F")}}
+              {{option(settings.get("noatz"), "G", "Class G")}}
             </select>
           </div>
         </div>
@@ -60,9 +60,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="ul">
-              {{option(settings.get("ul"), "exclude", "Exclude")}}
-              {{option(settings.get("ul"), "classf", "Class F")}}
-              {{option(settings.get("ul"), "classg", "Class G")}}
+              {{option(settings.get("ul"), "", "Exclude")}}
+              {{option(settings.get("ul"), "F", "Class F")}}
+              {{option(settings.get("ul"), "G", "Class G")}}
             </select>
           </div>
         </div>
@@ -77,10 +77,10 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="glider">
-              {{option(settings.get("glider"), "exclude", "Exclude")}}
-              {{option(settings.get("glider"), "gsec", "Gliding Sector")}}
-              {{option(settings.get("glider"), "classf", "Class F")}}
-              {{option(settings.get("glider"), "classg", "Class G")}}
+              {{option(settings.get("glider"), "", "Exclude")}}
+              {{option(settings.get("glider"), "GSEC", "Gliding Sector")}}
+              {{option(settings.get("glider"), "F", "Class F")}}
+              {{option(settings.get("glider"), "G", "Class G")}}
             </select>
           </div>
         </div>
@@ -93,7 +93,7 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="home">
-              {{option(settings.get("home"), "none", "None")}}
+              {{option(settings.get("home"), "", "None")}}
               {% for gs in gliding_sites %}
                 {{option(settings.get("home"), gs, gs)}}
               {% endfor %}
@@ -111,8 +111,8 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="radio">
-              {{option(settings.get("radio"), "no", "No")}}
-              {{option(settings.get("radio"), "yes", "Yes")}}
+              {{option(settings.get("radio"), "", "No")}}
+              {{option(settings.get("radio"), "APPEND", "Yes")}}
             </select>
           </div>
         </div>

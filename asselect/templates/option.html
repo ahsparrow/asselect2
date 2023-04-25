@@ -14,9 +14,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="format">
-              {{option(settings.get("format"), "openair", "OpenAir")}}
-              {{option(settings.get("format"), "ratonly", "RA(T) Only")}}
-              {{option(settings.get("format"), "competition", "Competition")}}
+              {{option(settings.get("format"), "OPENAIR", "OpenAir")}}
+              {{option(settings.get("format"), "RATONLY", "RA(T) Only")}}
+              {{option(settings.get("format"), "COMPETITION", "Competition")}}
             </select>
           </div>
         </div>
@@ -29,10 +29,10 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="maxlevel">
-              {{option(settings.get("maxlevel"), "unlimited", "Unlimited")}}
-              {{option(settings.get("maxlevel"), "fl195", "FL195")}}
-              {{option(settings.get("maxlevel"), "fl105", "FL105")}}
-              {{option(settings.get("maxlevel"), "fl65", "FL65")}}
+              {{option(settings.get("maxlevel"), "FL660", "Unlimited")}}
+              {{option(settings.get("maxlevel"), "FL195", "FL195")}}
+              {{option(settings.get("maxlevel"), "FL105", "FL105")}}
+              {{option(settings.get("maxlevel"), "FL65", "FL65")}}
             </select>
           </div>
         </div>
@@ -47,9 +47,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="hirta">
-              {{option(settings.get("hirta"), "exclude", "Exclude")}}
-              {{option(settings.get("hirta"), "danger", "Danger")}}
-              {{option(settings.get("hirta"), "restricted", "Restricted")}}
+              {{option(settings.get("hirta"), "", "Exclude")}}
+              {{option(settings.get("hirta"), "DANGER", "Danger")}}
+              {{option(settings.get("hirta"), "RESTRICTED", "Restricted")}}
             </select>
           </div>
         </div>
@@ -62,9 +62,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="obstacle">
-              {{option(settings.get("obstacle"), "exclude", "Exclude")}}
-              {{option(settings.get("obstacle"), "classf", "Class F")}}
-              {{option(settings.get("obstacle"), "classg", "Class G")}}
+              {{option(settings.get("obstacle"), "", "Exclude")}}
+              {{option(settings.get("obstacle"), "F", "Class F")}}
+              {{option(settings.get("obstacle"), "G", "Class G")}}
             </select>
           </div>
         </div>
@@ -79,9 +79,9 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="overlay">
-              {{option(settings.get("overlay"), "exclude", "Exclude")}}
-              {{option(settings.get("overlay"), "fl105", "Up to FL105")}}
-              {{option(settings.get("overlay"), "fl195", "Up to FL195")}}
+              {{option(settings.get("overlay"), "", "Exclude")}}
+              {{option(settings.get("overlay"), "FL105", "Up to FL105")}}
+              {{option(settings.get("overlay"), "FL195", "Up to FL195")}}
             </select>
           </div>
         </div>
