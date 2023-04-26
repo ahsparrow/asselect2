@@ -15,11 +15,26 @@
 # You should have received a copy of the GNU General Public License
 # along with ASSelect.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import json
 
 from flask import Blueprint, current_app, make_response, render_template, request
 
 from asselect.openair import normlevel, openair
+
+HEADER = """UK Airspace
+Alan Sparrow (airspace@asselect.uk)
+
+I have tried to make this data as accurate as possible but
+there will still be errors. Don't blame me if you go somewhere you
+should not have gone while using this data.
+
+To the extent possible under law, Alan Sparrow has waived all
+copyright and related or neighbouring rights to this file. The data
+in this file is based on the work of others including: George Knight,
+Geoff Brown, Peter Desmond and Rory O'Connor.  The data is originally
+sourced from the UK Aeronautical Information Package (AIP).
+"""
 
 bp = Blueprint("blueprint", __name__)
 
@@ -73,7 +88,21 @@ def download():
         wave_names=wave,
     )
 
-    resp = make_response(oa_data.encode(encoding="ascii"))
+    hdr = HEADER
+    hdr += f"{current_app.config['RELEASE_TEXT']}\n\n"
+    hdr += f"AIRAC: {current_app.config['AIRAC_DATE']}\n"
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    now = now.replace(microsecond=0)
+    hdr += f"Produced by asselect.uk: {now.isoformat()}\n"
+
+    commit = current_app.config['YAIXM']['release'].get('commit', 'Unknown')
+    hdr += f"Commit: {commit}\n"
+
+    hdr = "\n".join(["* " + line for line in hdr.splitlines()])
+
+    data = hdr + "\n" + oa_data
+    resp = make_response(data.encode(encoding="ascii"))
     resp.headers["Content-Type"] = "text/plain"
     resp.headers["Content-Disposition"] = "attachment; filename=opeair.txt"
     resp.set_cookie("settings", value=json.dumps(settings), max_age=63072000)
