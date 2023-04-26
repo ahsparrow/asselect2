@@ -59,6 +59,7 @@ def index():
 def download():
     settings = request.args.to_dict()
 
+    # Openair settings
     types = {
         "atz": settings["atz"],
         "ils": settings["atz"] if settings["ils"] == "ATZ" else settings["ils"],
@@ -76,8 +77,11 @@ def download():
     rat = [s[4:] for s in settings if s.startswith("rat-")]
     wave = [s[5:] for s in settings if s.startswith("wave-")]
     loa = [s[4:] for s in settings if s.startswith("loa-")]
+
+    # Add default LOAs
     loa.extend([loa["name"] for loa in current_app.config["YAIXM"]["loa"] if loa.get("default")])
 
+    # Create OpenAir data
     oa_data = openair(
         current_app.config["YAIXM"],
         types,
@@ -89,6 +93,7 @@ def download():
         wave_names=wave,
     )
 
+    # Add the header
     hdr = HEADER
     hdr += f"{current_app.config['RELEASE_TEXT']}\n\n"
     hdr += f"AIRAC: {current_app.config['AIRAC_DATE']}\n"
@@ -103,9 +108,16 @@ def download():
     hdr = "\n".join(["* " + line for line in hdr.splitlines()])
 
     data = hdr + "\n" + oa_data
+
+    # Add overlay text
+    if settings["overlay"] == "FL105":
+        data += current_app.config["OVERLAY_105"]
+    elif settings["overlay"] == "FL195":
+        data += current_app.config["OVERLAY_195"]
+
+    # Generate response
     resp = make_response(data.encode(encoding="ascii"))
     resp.headers["Content-Type"] = "text/plain"
     resp.headers["Content-Disposition"] = "attachment; filename=opeair.txt"
     resp.set_cookie("settings", value=json.dumps(settings), max_age=63072000)
-
     return resp

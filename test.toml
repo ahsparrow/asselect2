@@ -1,3 +1,6 @@
 [flask]
 
 yaixm_file = "yaixm.json"
+
+overlay_105 = "overlay.txt"
+overlay_195 = "overlay.txt"

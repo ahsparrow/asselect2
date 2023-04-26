@@ -24,8 +24,8 @@ from flask import Flask
 import asselect.blueprint
 
 
-def load_yaixm(app, yaixm_file):
-    yaixm = json.load(open(yaixm_file))
+def load_config(app, config):
+    yaixm = json.load(open(config["yaixm_file"]))
 
     app.config["YAIXM"] = yaixm
     app.config["RATS"] = [rat["name"] for rat in yaixm["rat"]]
@@ -47,6 +47,11 @@ def load_yaixm(app, yaixm_file):
     app.config["AIRAC_DATE"] = yaixm["release"]["airac_date"][:10]
     app.config["RELEASE_TEXT"] = yaixm["release"]["note"]
 
+    with open(config["overlay_105"]) as f:
+        app.config["OVERLAY_105"] = f.read()
+    with open(config["overlay_195"]) as f:
+        app.config["OVERLAY_195"] = f.read()
+
 
 def create_app(config):
     # Load config data
@@ -54,7 +59,8 @@ def create_app(config):
         config = tomllib.load(f)["flask"]
 
     app = Flask("asselect")
-    load_yaixm(app, config["yaixm_file"])
+
+    load_config(app, config)
 
     app.register_blueprint(asselect.blueprint.bp)
 
