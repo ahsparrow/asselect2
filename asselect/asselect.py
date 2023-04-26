@@ -28,6 +28,7 @@ def load_yaixm(app, yaixm_file):
         ]
     )
     app.config["AIRAC_DATE"] = yaixm["release"]["airac_date"][:10]
+    app.config["RELEASE_TEXT"] = yaixm["release"]["note"]
 
 
 def create_app(config):

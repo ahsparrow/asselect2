@@ -18,6 +18,8 @@ def index():
         loas=current_app.config["LOAS"],
         rats=current_app.config["RATS"],
         wave_boxes=current_app.config["WAVE_BOXES"],
+        airac_date=current_app.config["AIRAC_DATE"],
+        release_text=current_app.config["RELEASE_TEXT"]
     )
 
 

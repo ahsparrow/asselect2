@@ -54,9 +54,23 @@
     <div class="container block">
       <div class="mx-4">
         <input class="button is-primary" type="submit" value="Download">
+        <a id="airac-button" class="button is-text is-pulled-right">
+          {{ airac_date }}
+        </a>
       </div>
     </div>
   </form>
+
+  <div class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <div class="box">
+        <h2 class="subtitle">Release Details</h2>
+        <pre>{{ release_text }}</pre>
+      </div>
+    </div>
+    <button id="modal-close" class="modal-close is-large"></button>
+  </div>
 
 <script>
   // Tab control
@@ -75,6 +89,17 @@
         item.hidden = true;;
       });
       document.querySelector(`div[data-content="${data}"]`).hidden = false;
+    });
+  });
+
+  // AIRAC data modal control
+  document.querySelector("#airac-button").addEventListener("click", (e) => {
+    document.querySelector(".modal").classList.add("is-active");
+  });
+
+  document.querySelectorAll(".modal-background, #modal-close").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      document.querySelector(".modal").classList.remove("is-active");
     });
   });
 </script>
