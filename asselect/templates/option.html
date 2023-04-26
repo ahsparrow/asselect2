@@ -47,7 +47,7 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="hirta">
-              {{option(settings.get("hirta"), "", "Exclude")}}
+              {{option(settings.get("hirta"), "", "No")}}
               {{option(settings.get("hirta"), "Q", "Danger")}}
               {{option(settings.get("hirta"), "R", "Restricted")}}
             </select>
@@ -62,7 +62,7 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="obstacle">
-              {{option(settings.get("obstacle"), "", "Exclude")}}
+              {{option(settings.get("obstacle"), "", "No")}}
               {{option(settings.get("obstacle"), "F", "Class F")}}
               {{option(settings.get("obstacle"), "G", "Class G")}}
             </select>
@@ -79,7 +79,7 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="overlay">
-              {{option(settings.get("overlay"), "", "Exclude")}}
+              {{option(settings.get("overlay"), "", "No")}}
               {{option(settings.get("overlay"), "FL105", "Up to FL105")}}
               {{option(settings.get("overlay"), "FL195", "Up to FL195")}}
             </select>
