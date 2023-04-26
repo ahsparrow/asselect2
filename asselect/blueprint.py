@@ -74,8 +74,9 @@ def download():
     append_frequency = settings["radio"] != ""
 
     rat = [s[4:] for s in settings if s.startswith("rat-")]
-    loa = [s[4:] for s in settings if s.startswith("loa-")]
     wave = [s[5:] for s in settings if s.startswith("wave-")]
+    loa = [s[4:] for s in settings if s.startswith("loa-")]
+    loa.extend([loa["name"] for loa in current_app.config["YAIXM"]["loa"] if loa.get("default")])
 
     oa_data = openair(
         current_app.config["YAIXM"],
