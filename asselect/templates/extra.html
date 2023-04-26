@@ -1,7 +1,10 @@
 <div id="extra_blocks">
   <div class="card block">
     <header class="card-header is-clickable" data-card="rat"}>
-      <p class="card-header-title">Temporary Restrictions, RA(T)</p>
+      <div class="card-header-title">
+        <p>Temporary Restrictions, RA(T)</p>
+        <button id="rat-button" class="button is-info is-light is-small ml-2" type="button" data-card="rat">Clear</button>
+      </div>
     </header>
 
     <div class="card-content" data-card="rat">
@@ -22,10 +25,13 @@
 
   <div class="card block">
     <header class="card-header is-clickable" data-card="loa">
-      <p class="card-header-title">Local Agreements</p>
+      <div class="card-header-title">
+        <p>Local Agreements</p>
+        <button id="loa-button" class="is-hidden button is-info is-light is-small ml-2" type="button" data-card="loa">Clear</button>
+      </div>
     </header>
 
-    <div class="card-content" hidden data-card="loa">
+    <div class="card-content is-hidden" data-card="loa">
       <div class="columns is-multiline">
         {% for loa in loas %}
           <div class="column is-one-third">
@@ -43,10 +49,13 @@
 
   <div class="card block">
     <header class="card-header is-clickable"} data-card="wave">
-      <p class="card-header-title">Wave Boxes</p>
+      <div class="card-header-title">
+        <p>Wave Boxes</p>
+        <button id="wave-button" class="is-hidden button is-info is-light is-small ml-2" type="button" data-card="wave">Clear</button>
+      </div>
     </header>
 
-    <div class="card-content" hidden data-card="wave">
+    <div class="card-content is-hidden" data-card="wave">
       <div class="columns is-multiline">
         {% for wave in wave_boxes %}
           <div class="column is-one-third">
@@ -64,13 +73,36 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll(".card-header").forEach((header) => {
-      header.addEventListener("click", (e) => {
-        document.querySelectorAll(".card-content").forEach((card) => {
-            card.hidden = (card.getAttribute("data-card") != header.getAttribute("data-card"));
-        });
+  // Add click listener to card headers
+  document.querySelectorAll(".card-header").forEach((header) => {
+    header.addEventListener("click", (e) => {
+      document.querySelectorAll(".card-content, #rat-button, #loa-button, #wave-button").forEach((element) => {
+        // Hide or show card content and clear buttons
+        if (element.getAttribute("data-card") == header.getAttribute("data-card")) {
+          element.classList.remove("is-hidden");
+        } else {
+          element.classList.add("is-hidden");
+        }
       });
+    });
+  });
+
+  // Clear RA(T)s
+  document.querySelector("#rat-button").addEventListener("click", (e) => {
+    document.querySelectorAll("input[name^='rat-']").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  });
+  // Clear LOAs
+  document.querySelector("#loa-button").addEventListener("click", (e) => {
+    document.querySelectorAll("input[name^='loa-']").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  });
+  // Clear Wave boxes
+  document.querySelector("#wave-button").addEventListener("click", (e) => {
+    document.querySelectorAll("input[name^='wave-']").forEach((checkbox) => {
+      checkbox.checked = false;
     });
   });
 </script>
