@@ -322,18 +322,17 @@ def openair_boundary(boundary):
         first_point = boundary[0]["line"][0]
 
     for segment in boundary:
-        match segment:
-            case {"line": points}:
-                for point in points:
-                    yield from openair_point(point)
-                last_point = points[-1]
+        if "line" in segment:
+            for point in segment["line"]:
+                yield from openair_point(point)
+            last_point = segment['line'][-1]
 
-            case {"circle": circle}:
-                yield from openair_circle(circle)
+        elif "circle" in segment:
+            yield from openair_circle(segment["circle"])
 
-            case {"arc": arc}:
-                yield from openair_arc(arc, last_point)
-                last_point = arc["to"]
+        elif "arc" in segment:
+            yield from openair_arc(segment["arc"], last_point)
+            last_point = segment["arc"]["to"]
 
     # Close the polygon if necessary
     if first_point and first_point != last_point:
