@@ -1,7 +1,7 @@
 __pycache__
 *.pyc
 
-yaixm.json
+data
 
 node_modules
 package-lock.json
