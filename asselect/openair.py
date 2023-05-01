@@ -203,42 +203,42 @@ def typer(volume, types, format):
         out = "RMZ"
     else:
         comp = format == "competition"
-        match volume["type"]:
-            case "ATZ":
-                out = types["atz"]
-            case "D":
-                out = "P" if comp and "SI" in volume["rule"] else "Q"
-            case "D_OTHER":
-                if volume["localtype"] == "GLIDER":
-                    out = "W"
-                elif (
-                    comp
-                    and volume["localtype"] == "DZ"
-                    and "INTENSE" in volume["rules"]
-                ):
-                    out = "P"
-                elif volume["localtype"] in ["HIRTA", "GVS", "LASER"]:
-                    out = types["hirta"]
-                elif volume["localtype"] == "OBSTACLE":
-                    out = types["obstacle"]
-                else:
-                    out = "Q"
-            case "OTHER":
-                match volume["localtype"]:
-                    case "GLIDER":
-                        out = "W" if "LOA" in volume["rules"] else types["glider"]
-                    case "ILS" | "NOATZ" | "UL" as oatype:
-                        out = types[oatype.lower()]
-                    case "MATZ" | "TMZ" | "RMZ" as oatype:
-                        out = oatype
-                    case "RAT":
-                        out = "P"
-                    case _:
-                        out = "OTHER"
-            case "P" | "R" | "TMZ" | "RMZ" as oatype:
-                out = oatype
-            case _:
-                out = volume["class"]
+        vol_type = volume["type"]
+        if vol_type == "ATZ":
+            out = types["atz"]
+        elif vol_type == "D":
+            out = "P" if comp and "SI" in volume["rule"] else "Q"
+        elif vol_type == "D_OTHER":
+            if volume["localtype"] == "GLIDER":
+                out = "W"
+            elif (
+                comp
+                and volume["localtype"] == "DZ"
+                and "INTENSE" in volume["rules"]
+            ):
+                out = "P"
+            elif volume["localtype"] in ["HIRTA", "GVS", "LASER"]:
+                out = types["hirta"]
+            elif volume["localtype"] == "OBSTACLE":
+                out = types["obstacle"]
+            else:
+                out = "Q"
+        elif vol_type == "OTHER":
+            vol_localtype = volume["localtype"]
+            if vol_localtype == "GLIDER":
+                out = "W" if "LOA" in volume["rules"] else types["glider"]
+            elif vol_localtype in  ["ILS", "NOATZ", "UL"]:
+                out = types[vol_localtype.lower()]
+            elif vol_localtype in ["MATZ", "TMZ", "RMZ"]:
+                out = vol_localtype
+            elif vol_localtype == "RAT":
+                out = "P"
+            else:
+                out = "OTHER"
+        elif vol_type in ["P", "R", "TMZ", "RMZ"]:
+            out = vol_type
+        else:
+            out = volume["class"]
 
     return out
 

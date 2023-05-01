@@ -17,7 +17,7 @@
 
 import json
 import os
-import tomllib
+import toml
 
 from flask import Flask
 
@@ -55,8 +55,8 @@ def load_config(app, config):
 
 def create_app(config):
     # Load config data
-    with open(os.getenv(config), "rb") as f:
-        config = tomllib.load(f)["flask"]
+    with open(os.getenv(config), "r") as f:
+        config = toml.load(f)["flask"]
 
     app = Flask("asselect")
 
