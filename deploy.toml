@@ -1,6 +1,6 @@
 [flask]
 
-yaixm_file = "data/yaixm.json"
+yaixm_file = "/home/asselect/data/yaixm.json"
 
-overlay_105 = "data/overlay.txt"
-overlay_195 = "data/overlay.txt"
+overlay_105 = "/home/asselect/data/overlay_105.txt"
+overlay_195 = "/home/asselect/data/overlay_195.txt"
