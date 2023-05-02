@@ -58,6 +58,7 @@ def index():
 @bp.route("/download")
 def download():
     settings = request.args.to_dict()
+    current_app.logger.info(f"Download - [{request.remote_addr}] {settings}")
 
     # Openair settings
     types = {
