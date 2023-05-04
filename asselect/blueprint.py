@@ -121,6 +121,6 @@ def download():
     # Generate response
     resp = make_response(data.encode(encoding="ascii"))
     resp.headers["Content-Type"] = "text/plain"
-    resp.headers["Content-Disposition"] = "attachment; filename=opeair.txt"
+    resp.headers["Content-Disposition"] = "attachment; filename=openair.txt"
     resp.set_cookie("settings", value=json.dumps(settings), max_age=63072000)
     return resp
