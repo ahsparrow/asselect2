@@ -17,16 +17,19 @@
 
 import json
 import os
-import toml
+
+from dotenv import load_dotenv
 
 from flask import Flask
 
 import asselect.blueprint
 
 
-def load_config(app, config):
-    yaixm = json.load(open(config["yaixm_file"]))
+def load_config(app):
+    load_dotenv()
+    app.config.from_prefixed_env()
 
+    yaixm = json.load(open(app.config["YAIXM_FILE"]))
     app.config["YAIXM"] = yaixm
     app.config["RATS"] = [rat["name"] for rat in yaixm["rat"]]
     app.config["LOAS"] = [loa["name"] for loa in yaixm["loa"] if not loa.get("default")]
@@ -47,20 +50,10 @@ def load_config(app, config):
     app.config["AIRAC_DATE"] = yaixm["release"]["airac_date"][:10]
     app.config["RELEASE_TEXT"] = yaixm["release"]["note"]
 
-    with open(config["overlay_105"]) as f:
-        app.config["OVERLAY_105"] = f.read()
-    with open(config["overlay_195"]) as f:
-        app.config["OVERLAY_195"] = f.read()
 
-
-def create_app(config):
-    # Load config data
-    with open(os.getenv(config), "r") as f:
-        config = toml.load(f)["flask"]
-
+def create_app():
     app = Flask("asselect")
-
-    load_config(app, config)
+    load_config(app)
 
     app.register_blueprint(asselect.blueprint.bp)
 

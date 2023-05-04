@@ -24,12 +24,12 @@ import asselect.asselect
 
 # Create the application
 def create_app():
-    return asselect.asselect.create_app("ASSELECT_CONFIG")
+    return asselect.asselect.create_app()
 
 
 # Factory function for running with gunicorn
 def create_gunicorn_app():
-    app = asselect.asselect.create_app("ASSELECT_CONFIG")
+    app = asselect.asselect.create_app()
 
     gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers

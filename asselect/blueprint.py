@@ -112,9 +112,11 @@ def download():
 
     # Add overlay text
     if settings["overlay"] == "FL105":
-        data += current_app.config["OVERLAY_105"]
+        with open(current_app.config["OVERLAY_105"]) as f:
+            data += f.read()
     elif settings["overlay"] == "FL195":
-        data += current_app.config["OVERLAY_195"]
+        with open(current_app.config["OVERLAY_195"]) as f:
+            data += f.read()
 
     # Generate response
     resp = make_response(data.encode(encoding="ascii"))
