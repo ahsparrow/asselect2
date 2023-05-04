@@ -18,15 +18,12 @@
 import json
 import os
 
-from dotenv import load_dotenv
-
 from flask import Flask
 
 import asselect.blueprint
 
 
 def load_config(app):
-    load_dotenv()
     app.config.from_prefixed_env()
 
     yaixm = json.load(open(app.config["YAIXM_FILE"]))

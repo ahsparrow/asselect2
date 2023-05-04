@@ -17,6 +17,7 @@
 
 import logging
 
+from dotenv import load_dotenv
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import asselect.asselect
@@ -29,6 +30,7 @@ def create_app():
 
 # Factory function for running with gunicorn
 def create_gunicorn_app():
+    load_dotenv()
     app = asselect.asselect.create_app()
 
     gunicorn_logger = logging.getLogger("gunicorn.error")
