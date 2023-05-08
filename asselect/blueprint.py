@@ -17,6 +17,7 @@
 
 import datetime
 import json
+import textwrap
 
 from flask import Blueprint, current_app, make_response, render_template, request
 
@@ -96,7 +97,7 @@ def download():
 
     # Add the header
     hdr = HEADER
-    hdr += f"{current_app.config['RELEASE_TEXT']}\n\n"
+    hdr += f"\n{current_app.config['RELEASE_TEXT']}\n"
     hdr += f"AIRAC: {current_app.config['AIRAC_DATE']}\n"
 
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -105,8 +106,9 @@ def download():
 
     commit = current_app.config['YAIXM']['release'].get('commit', 'Unknown')
     hdr += f"Commit: {commit}\n"
+    hdr += "\n".join(textwrap.wrap(str(settings)))
 
-    hdr = "\n".join(["* " + line for line in hdr.splitlines()])
+    hdr = "\n".join(["* " + line if line else "*" for line in hdr.splitlines()])
 
     data = hdr + "\n" + oa_data
 
@@ -116,6 +118,9 @@ def download():
             data += f.read()
     elif settings["overlay"] == "FL195":
         with open(current_app.config["OVERLAY_195"]) as f:
+            data += f.read()
+    elif settings["overlay"] == "ATZDZ":
+        with open(current_app.config["OVERLAY_ATZDZ"]) as f:
             data += f.read()
 
     # Generate response
