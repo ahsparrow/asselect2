@@ -93,7 +93,7 @@
         <div class="control">
           <div class="select is-fullwidth">
             <select name="home">
-              {{option(settings.get("home"), "", "None")}}
+              {{option(settings.get("home"), "", "No")}}
               {% for gs in gliding_sites %}
                 {{option(settings.get("home"), gs, gs)}}
               {% endfor %}
