@@ -209,7 +209,7 @@ def typer(volume, types, format):
         if vol_type == "ATZ":
             out = types["atz"]
         elif vol_type == "D":
-            out = "P" if comp and "SI" in volume["rule"] else "Q"
+            out = "P" if comp and "SI" in volume["rules"] else "Q"
         elif vol_type == "D_OTHER":
             if volume["localtype"] == "GLIDER":
                 out = "W"
@@ -357,11 +357,10 @@ def openair(
     append_frequency=False,
     loa_names=[],
     wave_names=[],
-    rat_names=[],
-    rat_only=False,
+    rat_names=[]
 ):
     rats = load_airspace(data["rat"])
-    if rat_only:
+    if format == "rat_only":
         # Only return selected RATs
         airspace = [rat for rat in rats if rat["feature_name"] in rat_names]
     else:

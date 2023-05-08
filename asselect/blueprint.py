@@ -81,6 +81,11 @@ def download():
     home = settings["home"]
     max_level = normlevel(settings["maxlevel"])
     append_frequency = settings["radio"] != ""
+    format = {
+        "OPENAIR": "openair",
+        "RATONLY": "rat_only",
+        "COMPETITION": "competition",
+    }[settings["format"]]
 
     rat = [s[4:] for s in settings if s.startswith("rat-")]
     wave = [s[5:] for s in settings if s.startswith("wave-")]
@@ -102,10 +107,10 @@ def download():
         home=home,
         max_level=max_level,
         append_frequency=append_frequency,
+        format=format,
         loa_names=loa,
         rat_names=rat,
         wave_names=wave,
-        rat_only=(settings["format"] == "RATONLY"),
     )
 
     # Add the header
