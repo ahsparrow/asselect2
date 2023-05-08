@@ -142,9 +142,10 @@ def download():
             data += f.read()
 
     # Generate response
+    filename = current_app.config["AIRAC_DATE"].lower() + ".txt"
     resp = make_response(data.encode(encoding="ascii"))
     resp.headers["Content-Type"] = "text/plain"
-    resp.headers["Content-Disposition"] = "attachment; filename=openair.txt"
+    resp.headers["Content-Disposition"] = f"attachment; filename=uk{filename}"
     resp.set_cookie("settings", value=json.dumps(settings), max_age=63072000)
     resp.set_cookie("schema", value=SCHEMA_VERSION, max_age=63072000)
     return resp
