@@ -63,6 +63,7 @@
           <div class="select is-fullwidth">
             <select name="obstacle">
               {{option(settings.get("obstacle"), "", "No")}}
+              {{option(settings.get("obstacle"), "Q", "Danger")}}
               {{option(settings.get("obstacle"), "F", "Class F")}}
               {{option(settings.get("obstacle"), "G", "Class G")}}
             </select>
