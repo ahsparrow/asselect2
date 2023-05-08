@@ -29,7 +29,7 @@ DDMMSSH_RE = re.compile(DDMMSSH_PATTERN)
 
 # Return DMS values for floating point degrees value
 def dms(deg):
-    if deg < 0:
+    if deg <= 0:
         ns = "S"
         ew = "W"
         deg = -deg
