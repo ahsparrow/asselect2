@@ -148,14 +148,16 @@ def merge_loa(airspace, loa_data):
 def load_obstacles(data):
     obstacles = [
         {
-            "boundary": [{"circle": {"centre": obstacle["position"], "radius": "0.5 nm"}}],
+            "boundary": [
+                {"circle": {"centre": obstacle["position"], "radius": "0.5 nm"}}
+            ],
             "name": obstacle["name"],
             "normlower": 0,
             "lower": "SFC",
             "upper": obstacle["elevation"],
             "type": "D_OTHER",
             "localtype": "OBSTACLE",
-            "rules": []
+            "rules": [],
         }
         for obstacle in data
     ]
@@ -211,11 +213,7 @@ def typer(volume, types, format):
         elif vol_type == "D_OTHER":
             if volume["localtype"] == "GLIDER":
                 out = "W"
-            elif (
-                comp
-                and volume["localtype"] == "DZ"
-                and "INTENSE" in volume["rules"]
-            ):
+            elif comp and volume["localtype"] == "DZ" and "INTENSE" in volume["rules"]:
                 out = "P"
             elif volume["localtype"] in ["HIRTA", "GVS", "LASER"]:
                 out = types["hirta"]
@@ -227,7 +225,7 @@ def typer(volume, types, format):
             vol_localtype = volume["localtype"]
             if vol_localtype == "GLIDER":
                 out = "W" if "LOA" in volume["rules"] else types["glider"]
-            elif vol_localtype in  ["ILS", "NOATZ", "UL"]:
+            elif vol_localtype in ["ILS", "NOATZ", "UL"]:
                 out = types[vol_localtype.lower()]
             elif vol_localtype in ["MATZ", "TMZ", "RMZ"]:
                 out = vol_localtype
@@ -325,7 +323,7 @@ def openair_boundary(boundary):
         if "line" in segment:
             for point in segment["line"]:
                 yield from openair_point(point)
-            last_point = segment['line'][-1]
+            last_point = segment["line"][-1]
 
         elif "circle" in segment:
             yield from openair_circle(segment["circle"])
@@ -360,7 +358,7 @@ def openair(
     loa_names=[],
     wave_names=[],
     rat_names=[],
-    rat_only=False
+    rat_only=False,
 ):
     rats = load_airspace(data["rat"])
     if rat_only:
@@ -389,11 +387,12 @@ def openair(
 
         # Merge frequencies
         for volume in airspace:
-            if (frequency := services.get(volume.get("feature_id"))):
+            if frequency := services.get(volume.get("feature_id")):
                 volume["frequency"] = frequency
 
     return "".join(
-        f"{line}\n" for line in openair_generator(airspace, types, format, append_frequency)
+        f"{line}\n"
+        for line in openair_generator(airspace, types, format, append_frequency)
     )
 
     return oa

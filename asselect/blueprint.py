@@ -58,7 +58,7 @@ def index():
         rats=current_app.config["RATS"],
         wave_boxes=current_app.config["WAVE_BOXES"],
         airac_date=current_app.config["AIRAC_DATE"],
-        release_text=current_app.config["RELEASE_TEXT"]
+        release_text=current_app.config["RELEASE_TEXT"],
     )
 
 
@@ -75,7 +75,7 @@ def download():
         "ul": settings["ul"],
         "glider": settings["glider"],
         "hirta": settings["hirta"],
-        "obstacle": settings["obstacle"]
+        "obstacle": settings["obstacle"],
     }
 
     home = settings["home"]
@@ -87,7 +87,13 @@ def download():
     loa = [s[4:] for s in settings if s.startswith("loa-")]
 
     # Add default LOAs
-    loa.extend([loa["name"] for loa in current_app.config["YAIXM"]["loa"] if loa.get("default")])
+    loa.extend(
+        [
+            loa["name"]
+            for loa in current_app.config["YAIXM"]["loa"]
+            if loa.get("default")
+        ]
+    )
 
     # Create OpenAir data
     oa_data = openair(
@@ -99,7 +105,7 @@ def download():
         loa_names=loa,
         rat_names=rat,
         wave_names=wave,
-        rat_only=(settings["format"]=="RATONLY")
+        rat_only=(settings["format"] == "RATONLY"),
     )
 
     # Add the header
@@ -111,7 +117,7 @@ def download():
     now = now.replace(microsecond=0)
     hdr += f"Produced by asselect.uk: {now.isoformat()}\n"
 
-    commit = current_app.config['YAIXM']['release'].get('commit', 'Unknown')
+    commit = current_app.config["YAIXM"]["release"].get("commit", "Unknown")
     hdr += f"Commit: {commit}\n"
     hdr += "\n".join(textwrap.wrap(str(settings)))
 
@@ -135,5 +141,5 @@ def download():
     resp.headers["Content-Type"] = "text/plain"
     resp.headers["Content-Disposition"] = "attachment; filename=openair.txt"
     resp.set_cookie("settings", value=json.dumps(settings), max_age=63072000)
-    resp.set_cookie("schema", value= SCHEMA_VERSION, max_age=63072000)
+    resp.set_cookie("schema", value=SCHEMA_VERSION, max_age=63072000)
     return resp
