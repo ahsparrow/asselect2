@@ -37,12 +37,18 @@ Geoff Brown, Peter Desmond and Rory O'Connor.  The data is originally
 sourced from the UK Aeronautical Information Package (AIP).
 """
 
+SCHEMA_VERSION = "1"
+
 bp = Blueprint("blueprint", __name__)
 
 
 @bp.route("/")
 def index():
-    settings = json.loads(request.cookies.get("settings", "{}"))
+    schema = request.cookies.get("schema", "")
+    if schema == SCHEMA_VERSION:
+        settings = json.loads(request.cookies.get("settings", "{}"))
+    else:
+        settings = {}
 
     return render_template(
         "asselect.html",
@@ -128,4 +134,5 @@ def download():
     resp.headers["Content-Type"] = "text/plain"
     resp.headers["Content-Disposition"] = "attachment; filename=openair.txt"
     resp.set_cookie("settings", value=json.dumps(settings), max_age=63072000)
+    resp.set_cookie("schema", value= SCHEMA_VERSION, max_age=63072000)
     return resp
