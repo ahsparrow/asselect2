@@ -99,6 +99,7 @@ def download():
         loa_names=loa,
         rat_names=rat,
         wave_names=wave,
+        rat_only=(settings["format"]=="RATONLY")
     )
 
     # Add the header

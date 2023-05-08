@@ -360,32 +360,37 @@ def openair(
     loa_names=[],
     wave_names=[],
     rat_names=[],
+    rat_only=False
 ):
-    airspace = load_airspace(data["airspace"])
-    services = load_services(data["service"])
     rats = load_airspace(data["rat"])
+    if rat_only:
+        # Only return selected RATs
+        airspace = [rat for rat in rats if rat["feature_name"] in rat_names]
+    else:
+        airspace = load_airspace(data["airspace"])
+        services = load_services(data["service"])
 
-    # Merge selected LOAs
-    loa_data = [loa for loa in data["loa"] if loa["name"] in loa_names]
-    airspace = merge_loa(airspace, loa_data)
+        # Merge selected LOAs
+        loa_data = [loa for loa in data["loa"] if loa["name"] in loa_names]
+        airspace = merge_loa(airspace, loa_data)
 
-    # Add RATs
-    airspace.extend([rat for rat in rats if rat["feature_name"] in rat_names])
+        # Add RATs
+        airspace.extend([rat for rat in rats if rat["feature_name"] in rat_names])
 
-    # Add obstacles
-    if types.get("obstacle"):
-        obstacles = load_obstacles(data["obstacle"])
-        airspace.extend(obstacles)
+        # Add obstacles
+        if types.get("obstacle"):
+            obstacles = load_obstacles(data["obstacle"])
+            airspace.extend(obstacles)
 
-    # Filter airspace
-    airspace = list(
-        filter(make_filter(types, max_level, home, wave_names), airspace)
-    )
+        # Filter airspace
+        airspace = list(
+            filter(make_filter(types, max_level, home, wave_names), airspace)
+        )
 
-    # Merge frequencies
-    for volume in airspace:
-        if (frequency := services.get(volume.get("feature_id"))):
-            volume["frequency"] = frequency
+        # Merge frequencies
+        for volume in airspace:
+            if (frequency := services.get(volume.get("feature_id"))):
+                volume["frequency"] = frequency
 
     return "".join(
         f"{line}\n" for line in openair_generator(airspace, types, format, append_frequency)
