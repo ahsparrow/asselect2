@@ -1,0 +1,12 @@
+[Unit]
+Description="Gunicorn instance to serve asselect app"
+After=network.target
+
+[Service]
+User=asselect
+Group=asselect
+WorkingDirectory=/home/asselect/asselect2
+ExecStart=/home/asselect/asselect2/venv/bin/gunicorn --bind 127.0.0.1:8001 --workers=3 --log-level=info wsgi:create_gunicorn_app()
+
+[Install]
+WantedBy=multi-user.target
