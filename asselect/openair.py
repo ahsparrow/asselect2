@@ -357,7 +357,7 @@ def openair(
     append_frequency=False,
     loa_names=[],
     wave_names=[],
-    rat_names=[]
+    rat_names=[],
 ):
     rats = load_airspace(data["rat"])
     if format == "rat_only":
