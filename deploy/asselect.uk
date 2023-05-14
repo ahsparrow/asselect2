@@ -23,6 +23,11 @@ server {
         root /home/asselect/asselect2/asselect;
     }
 
+    # alias robots.txt
+    location /robots.txt {
+        alias /home/asselect/asselect2/static/robots.txt;
+    }
+
     # Navplot files
     location /navplot/ {
         root /home/asselect;
