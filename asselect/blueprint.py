@@ -133,15 +133,12 @@ def download():
     # Add overlay text
     if settings["overlay"] == "FL105":
         with open(current_app.config["OVERLAY_105"]) as f:
-            data += "*\n* FL105 Overlay\n*\n"
             data += f.read()
     elif settings["overlay"] == "FL195":
         with open(current_app.config["OVERLAY_195"]) as f:
-            data += "*\n* FL195 Overlay\n*\n"
             data += f.read()
     elif settings["overlay"] == "ATZDZ":
         with open(current_app.config["OVERLAY_ATZDZ"]) as f:
-            data += "*\n* FL105 ATZ/DZ Overlay\n*\n"
             data += f.read()
 
     # Generate response
