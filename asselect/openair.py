@@ -123,24 +123,22 @@ def merge_loa(airspace, loa_data):
     airspace.extend(flat_add)
 
     # Replace existing volumes
-    replace_vols = []
     for loa in loa_data:
         for area in loa["areas"]:
             for replace in area.get("replace", []):
                 # Find volume to be replaced
-                for vol in airspace:
-                    if vol.get("id") == replace["id"]:
-                        break
+                vol = next((v for v in airspace if v.get("id") == replace["id"]), None)
 
-                # Delete old volume
-                airspace.remove(vol)
+                if vol:
+                    # Delete old volume
+                    airspace.remove(vol)
 
-                # Make new volumes
-                for v in replace["geometry"]:
-                    vol["boundary"] = v["boundary"]
-                    vol["upper"] = v["upper"]
-                    vol["lower"] = v["lower"]
-                    airspace.append(vol.copy())
+                    # Make new volumes
+                    for v in replace["geometry"]:
+                        for k in v:
+                            vol[k] = v[k]
+                        vol["normlower"] = normlevel(vol["lower"])
+                        airspace.append(vol.copy())
 
     return airspace
 
