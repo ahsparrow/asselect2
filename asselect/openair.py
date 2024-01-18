@@ -93,8 +93,8 @@ def load_airspace(data):
             "name": volume.get("name"),
             "normlower": normlevel(volume["lower"]),
             "rules": ",".join(feature.get("rules", []) + volume.get("rules", [])),
-            "seqno": str(s)
-            if (s := volume.get("seqno"))
+            "seq": s
+            if (s := volume.get("seq"))
             else "ABCDEFGHIJKLM"[n]
             if len(feature["geometry"]) > 1
             else None,
@@ -163,7 +163,7 @@ def load_obstacles(data):
     return obstacles
 
 
-def namer(volume, append_freq, append_seqno):
+def namer(volume, append_freq, append_seq):
     if volume["name"]:
         name = volume["name"]
     else:
@@ -181,8 +181,8 @@ def namer(volume, append_freq, append_seqno):
         elif "RAZ" in volume["rules"]:
             name += " " + "RAZ"
 
-        if append_seqno and (seqno := volume["seqno"]):
-            name += f"-{seqno}"
+        if append_seq and (seq := volume["seq"]):
+            name += f"-{seq}"
 
         qualifiers = [q for q in ["SI", "NOTAM"] if q in volume["rules"]]
         if qualifiers:
