@@ -13,9 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 //
+pub mod about_tab;
 pub mod airspace_tab;
-pub mod option_tab;
 pub mod extra_tab;
 pub mod notam_tab;
-pub mod about_tab;
+pub mod option_tab;
+pub mod select_field;
 pub mod tabs;

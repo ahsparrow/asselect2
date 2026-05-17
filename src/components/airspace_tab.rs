@@ -1,4 +1,4 @@
-// Copyright 2026, Alan Sparrow
+// Copyright 2024, Alan Sparrow
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,9 +13,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 //
-use leptos::html::{p};
+use leptos::html::div;
 use leptos::prelude::*;
 
+use crate::components::select_field::select_field;
+use crate::settings::Settings;
+
 pub fn airspace_tab() -> impl IntoView {
-    p().child("Airspace")
+    let setter = use_context::<WriteSignal<Settings>>().expect("to find setter");
+    let getter = use_context::<ReadSignal<Settings>>().expect("to find getter");
+    div().child(div().class("box").child((
+        div().class("columns").child((
+            div().class("column is-one-third").child(select_field(
+                setter,
+                getter,
+                "ATZ",
+                "atz",
+                &vec!["Class D", "Control Zone"],
+                &vec!["classd", "ctr"],
+            )),
+            div().class("column is-one-third").child(select_field(
+                setter,
+                getter,
+                "ILS Feather",
+                "ils",
+                &vec!["As ATZ", "Class F", "Class G"],
+                &vec!["asatz", "classf", "classg"],
+            )),
+        )),
+    )))
 }

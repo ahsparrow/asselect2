@@ -20,17 +20,17 @@ use std::collections::HashSet;
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Settings {
     pub atz: String,
-    pub ils: Option<String>,
-    pub unlicensed: Option<String>,
-    pub microlight: Option<String>,
-    pub gliding: Option<String>,
-    pub home: Option<String>,
-    pub hirta_gvs: Option<String>,
-    pub obstacle: Option<String>,
-    pub max_level: u16,
-    pub radio: bool,
+    pub ils: String,
+    pub unlicensed: String,
+    pub microlight: String,
+    pub gliding: String,
+    pub home: String,
+    pub hirta_gvs: String,
+    pub obstacle: String,
+    pub max_level: String,
+    pub radio: String,
     pub format: String,
-    pub overlay: Option<String>,
+    pub overlay: String,
     #[serde(default)]
     pub loa: HashSet<String>,
     #[serde(default)]
@@ -43,20 +43,60 @@ impl Default for Settings {
     fn default() -> Self {
         Settings {
             atz: "ctr".to_string(),
-            ils: None,
-            unlicensed: None,
-            microlight: None,
-            gliding: None,
-            home: None,
-            hirta_gvs: None,
-            obstacle: None,
-            max_level: 660,
-            radio: false,
+            ils: "asatz".to_string(),
+            unlicensed: "no".to_string(),
+            microlight: "no".to_string(),
+            gliding: "no".to_string(),
+            home: "".to_string(),
+            hirta_gvs: "no".to_string(),
+            obstacle: "no".to_string(),
+            max_level: "660".to_string(),
+            radio: "no".to_string(),
             format: "openair".to_string(),
-            overlay: None,
+            overlay: "no".to_string(),
             loa: HashSet::new(),
             rat: HashSet::new(),
             wave: HashSet::new(),
+        }
+    }
+}
+
+impl Settings {
+    pub fn update(&mut self, name: &str, value: &str) {
+        let val = value.to_string();
+
+        match name {
+            "atz" => self.atz = val,
+            "ils" => self.ils = val,
+            "unlicensed" => self.unlicensed = val,
+            "microlight" => self.microlight = val,
+            "gliding" => self.gliding = val,
+            "hirta_gvs" => self.hirta_gvs = val,
+            "obstacle" => self.obstacle = val,
+            "format" => self.format = val,
+            "max_level" => self.max_level = val,
+            "radio" => self.radio = val,
+            "overlay" => self.overlay = val,
+            "home" => self.home = val,
+            _ => (),
+        }
+    }
+
+    pub fn get(&self, name: &str) -> String {
+        match name {
+            "atz" => self.atz.clone(),
+            "ils" => self.ils.clone(),
+            "unlicensed" => self.unlicensed.clone(),
+            "microlight" => self.microlight.clone(),
+            "gliding" => self.gliding.clone(),
+            "hirta_gvs" => self.hirta_gvs.clone(),
+            "obstacle" => self.obstacle.clone(),
+            "format" => self.format.clone(),
+            "max_level" => self.max_level.clone(),
+            "radio" => self.radio.clone(),
+            "overlay" => self.overlay.clone(),
+            "home" => self.home.clone(),
+            _ => "".to_string(),
         }
     }
 }

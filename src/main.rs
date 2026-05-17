@@ -64,10 +64,10 @@ fn main_view() -> impl IntoView {
             div().class("mx-4")
                 .child((
                     button().attr("type", "submit").class("button is-primary has-text-primary-100")
+                    .on(ev::click, download)
                     .child("Get Airspace"),
 
                     a().id("airac-button").class("button is-text is-pulled-right")
-                    .on(ev::click, download)
                     .child(format!("AIRAC: {}", "TODO")),
                 )),
         )
