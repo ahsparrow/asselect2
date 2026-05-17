@@ -1,23 +1,61 @@
+use std::collections::HashSet;
+
 use codee::string::JsonSerdeCodec;
+use geojson::FeatureCollection;
+use gloo::net::http::Request;
 use leptos::ev;
-use leptos::html::{a, button, div, header};
+use leptos::html::{a, button, div, header, p};
 use leptos::prelude::*;
 use leptos_use::storage::use_local_storage;
 
 use components::{
-    about_tab::about_tab, airspace_tab::airspace_tab,
+    about_tab::about_tab, airspace_tab::airspace_tab, extra_panel::extra_panel,
     extra_tab::extra_tab, notam_tab::notam_tab, option_tab::option_tab, tabs::tabs,
 };
-use settings::Settings;
+use settings::{ExtraType, Settings};
 
 mod components;
 mod settings;
 
 fn app() -> impl IntoView {
-    main_view()
+    let async_rat = LocalResource::new(fetch_rat);
+
+    move || match async_rat.get().as_ref() {
+        Some(resource) => match resource {
+            Some(rat) => {
+                let feature_collection: FeatureCollection = rat.parse().unwrap();
+
+                // This needs to use view! macro, otherwise reactive system breaks. Don't know why
+                view! {<MainView rat_fc=feature_collection.clone() />}.into_any()
+            }
+            None => p().child("Error getting airspace data").into_any(),
+        },
+        None => p()
+            .child("Getting airspace data, please wait...")
+            .into_any(),
+    }
 }
 
-fn main_view() -> impl IntoView {
+#[component]
+fn MainView(rat_fc: FeatureCollection) -> impl IntoView {
+    let mut rat_names: Vec<String> = rat_fc
+        .features
+        .iter()
+        .map(|f| {
+            f.properties
+                .clone()
+                .unwrap()
+                .get("rat_name")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+
+    let mut seen = HashSet::new();
+    rat_names.retain(|item| seen.insert(item.clone()));
+
     // Local settings storage
     let (local_settings, set_local_settings, _) =
         use_local_storage::<Settings, JsonSerdeCodec>("settings");
@@ -38,45 +76,59 @@ fn main_view() -> impl IntoView {
     let children = vec![
         airspace_tab().into_any(),
         option_tab().into_any(),
-        extra_tab().into_any(),
+        extra_tab(
+            vec![extra_panel(rat_names, ExtraType::Rat).into_any()],
+            vec!["Temporary Restrictions"],
+            vec![ExtraType::Rat],
+        )
+        .into_any(),
         notam_tab().into_any(),
         about_tab().into_any(),
     ];
 
     (
         // Page header
-        header().class("hero is-small has-background-primary-soft block")
-            .child(div().class("hero-body")
-                .child(div().class("container")
-
-                    .child(div() .class("title is-4 has-text-primary-soft-invert")
-                        .child("ASSelect - UK Airspace"),
+        header()
+            .class("hero is-small has-background-primary-soft block")
+            .child(
+                div().class("hero-body").child(
+                    div().class("container").child(
+                        div()
+                            .class("title is-4 has-text-primary-soft-invert")
+                            .child("ASSelect - UK Airspace"),
                     ),
                 ),
             ),
-
         // Tabs
-        div().class("container block")
+        div()
+            .class("container block")
             .child(tabs(tab_names, children)),
-
         // Buttons
         div().class("container block").child(
-            div().class("mx-4")
-                .child((
-                    button().attr("type", "submit").class("button is-primary has-text-primary-100")
+            div().class("mx-4").child((
+                button()
+                    .attr("type", "submit")
+                    .class("button is-primary has-text-primary-100")
                     .on(ev::click, download)
                     .child("Get Airspace"),
-
-                    a().id("airac-button").class("button is-text is-pulled-right")
+                a().id("airac-button")
+                    .class("button is-text is-pulled-right")
                     .child(format!("AIRAC: {}", "TODO")),
-                )),
-        )
+            )),
+        ),
     )
+}
+//
+// Get RAT data from server
+async fn fetch_rat() -> Option<String> {
+    let result = Request::get("rat.geojson").send().await;
+    match result {
+        Ok(response) => response.text().await.ok(),
+        _ => None,
+    }
 }
 
 fn main() {
     console_error_panic_hook::set_once();
     leptos::mount::mount_to_body(app)
 }
-
-

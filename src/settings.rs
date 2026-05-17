@@ -16,6 +16,13 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ExtraType {
+    Rat,
+    Loa,
+    Wave,
+}
+
 // Settings
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Settings {
@@ -98,5 +105,35 @@ impl Settings {
             "home" => self.home.clone(),
             _ => "".to_string(),
         }
+    }
+
+    pub fn set_extra(&mut self, id: ExtraType, value: &str, add: bool) {
+        let x = match id {
+            ExtraType::Rat => &mut self.rat,
+            ExtraType::Loa => &mut self.loa,
+            ExtraType::Wave => &mut self.wave,
+        };
+
+        if add {
+            x.insert(value.to_string());
+        } else {
+            x.remove(value);
+        }
+    }
+
+    pub fn get_extra(&self, id: ExtraType) -> &HashSet<String> {
+        match id {
+            ExtraType::Rat => &self.rat,
+            ExtraType::Loa => &self.loa,
+            ExtraType::Wave => &self.wave,
+        }
+    }
+
+    pub fn clear_extra(&mut self, id: ExtraType) {
+        match id {
+            ExtraType::Rat => &self.rat.clear(),
+            ExtraType::Loa => &self.loa.clear(),
+            ExtraType::Wave => &self.wave.clear(),
+        };
     }
 }
