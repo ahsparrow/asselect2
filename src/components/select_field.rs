@@ -27,7 +27,8 @@ pub fn select_field(
     options: &Vec<&str>,
     values: &Vec<&str>,
 ) -> impl IntoView + use<> {
-    let setting_name = setting.to_string();
+    let setting1 = setting.to_string();
+    let setting2 = setting.to_string();
 
     div()
         .class("field")
@@ -37,19 +38,20 @@ pub fn select_field(
                 div().class("control").child(
                     div().class("select is-fullwidth").child(
                         select()
-                            .prop("value", getter.with(|s| s.get(&setting)))
+                            .prop("value", move || getter.with(|s| s.get(&setting1)))
                             .on(ev::change, move |ev| {
-                                setter.update(|s| s.update(&setting_name, &event_target_value(&ev)))
+                                setter.update(|s| s.update(&setting2, &event_target_value(&ev)))
                             })
                             .child(
                                 options
                                     .iter()
                                     .zip(values)
                                     .map(|(o, v)| {
-                                        option()
-                                            .value(v.to_string())
-                                            .child(o.to_string())
-                                            .selected(*v == getter.with(|s| s.get(&setting)))
+                                        let setting = setting.to_string();
+                                        let v = v.to_string();
+                                        option().value(v.to_string()).child(o.to_string()).selected(
+                                            move || *v == getter.with(|s| s.get(&setting)),
+                                        )
                                     })
                                     .collect_view(),
                             ),
