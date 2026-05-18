@@ -18,7 +18,7 @@ mod components;
 mod settings;
 
 fn app() -> impl IntoView {
-    let async_rat = LocalResource::new(fetch_rat);
+    let async_rat = LocalResource::new(|| fetch_data("rat.geojson"));
 
     move || match async_rat.get().as_ref() {
         Some(resource) => match resource {
@@ -43,7 +43,7 @@ fn MainView(rat_fc: FeatureCollection) -> impl IntoView {
         .iter()
         .map(|f| {
             f.properties
-                .clone()
+                .as_ref()
                 .unwrap()
                 .get("rat_name")
                 .unwrap()
@@ -120,8 +120,8 @@ fn MainView(rat_fc: FeatureCollection) -> impl IntoView {
 }
 //
 // Get RAT data from server
-async fn fetch_rat() -> Option<String> {
-    let result = Request::get("rat.geojson").send().await;
+async fn fetch_data(url: &str) -> Option<String> {
+    let result = Request::get(url).send().await;
     match result {
         Ok(response) => response.text().await.ok(),
         _ => None,
