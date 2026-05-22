@@ -1,3 +1,7 @@
+use std::io::BufReader;
+
+use geojson::FeatureReader;
+
 #[derive(serde::Deserialize)]
 pub struct AirspaceFeature {
     pub name: String,
@@ -21,8 +25,8 @@ pub struct RatFeature {
 }
 
 pub fn parse_airspace(text: &String) -> Vec<AirspaceFeature> {
-    let io_reader = std::io::BufReader::new(text.as_bytes());
-    let feature_reader = geojson::FeatureReader::from_reader(io_reader);
+    let io_reader = BufReader::new(text.as_bytes());
+    let feature_reader = FeatureReader::from_reader(io_reader);
 
     feature_reader
         .deserialize::<AirspaceFeature>()
@@ -33,8 +37,8 @@ pub fn parse_airspace(text: &String) -> Vec<AirspaceFeature> {
 }
 
 pub fn parse_loa(text: &String) -> Vec<LoaFeature> {
-    let io_reader = std::io::BufReader::new(text.as_bytes());
-    let feature_reader = geojson::FeatureReader::from_reader(io_reader);
+    let io_reader = BufReader::new(text.as_bytes());
+    let feature_reader = FeatureReader::from_reader(io_reader);
 
     feature_reader
         .deserialize::<LoaFeature>()
@@ -45,8 +49,8 @@ pub fn parse_loa(text: &String) -> Vec<LoaFeature> {
 }
 
 pub fn parse_rat(text: &String) -> Vec<RatFeature> {
-    let io_reader = std::io::BufReader::new(text.as_bytes());
-    let feature_reader = geojson::FeatureReader::from_reader(io_reader);
+    let io_reader = BufReader::new(text.as_bytes());
+    let feature_reader = FeatureReader::from_reader(io_reader);
 
     feature_reader
         .deserialize::<RatFeature>()
