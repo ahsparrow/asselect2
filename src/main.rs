@@ -18,21 +18,28 @@ mod components;
 mod settings;
 
 fn app() -> impl IntoView {
+    let async_airspace = LocalResource::new(|| fetch_data("airspace.geojson"));
+    let async_loa = LocalResource::new(|| fetch_data("loa.geojson"));
     let async_rat = LocalResource::new(|| fetch_data("rat.geojson"));
 
-    move || match async_rat.get().as_ref() {
-        Some(resource) => match resource {
-            Some(rat) => {
-                let feature_collection: FeatureCollection = rat.parse().unwrap();
-
-                // This needs to use view! macro, otherwise reactive system breaks. Don't know why
-                view! {<MainView rat_fc=feature_collection.clone() />}.into_any()
+    move || -> AnyView {
+        if let (Some(airspace), Some(rat), Some(loa)) =
+            (async_airspace.get(), async_rat.get(), async_loa.get())
+        {
+            if let (Some(_airspace_text), Some(rat_text), Some(_loa_text)) = (airspace, rat, loa) {
+                if let Ok::<FeatureCollection, _>(rat_fc) = rat_text.parse() {
+                    // This needs to use view! macro, otherwise reactive system breaks. Don't know why
+                    view! {<MainView rat_fc=rat_fc.clone() />}.into_any()
+                } else {
+                    p().child("Error parsing airspace data").into_any()
+                }
+            } else {
+                p().child("Error getting airspace data").into_any()
             }
-            None => p().child("Error getting airspace data").into_any(),
-        },
-        None => p()
-            .child("Getting airspace data, please wait...")
-            .into_any(),
+        } else {
+            p().child("Getting airspace data, please wait...")
+                .into_any()
+        }
     }
 }
 
@@ -118,8 +125,8 @@ fn MainView(rat_fc: FeatureCollection) -> impl IntoView {
         ),
     )
 }
-//
-// Get RAT data from server
+
+// Get data from server
 async fn fetch_data(url: &str) -> Option<String> {
     let result = Request::get(url).send().await;
     match result {
