@@ -28,8 +28,9 @@ fn app() -> impl IntoView {
         {
             if let (Some(_airspace_text), Some(rat_text), Some(_loa_text)) = (airspace, rat, loa) {
                 if let Ok::<FeatureCollection, _>(rat_fc) = rat_text.parse() {
-                    // This needs to use view! macro, otherwise reactive system breaks. Don't know why
-                    view! {<MainView rat_fc=rat_fc.clone() />}.into_any()
+                    // Create reactive view
+                    let view_fn = move || main_view(rat_fc.clone());
+                    view_fn().into_any()
                 } else {
                     p().child("Error parsing airspace data").into_any()
                 }
@@ -43,8 +44,7 @@ fn app() -> impl IntoView {
     }
 }
 
-#[component]
-fn MainView(rat_fc: FeatureCollection) -> impl IntoView {
+fn main_view(rat_fc: FeatureCollection) -> impl IntoView {
     let mut rat_names: Vec<String> = rat_fc
         .features
         .iter()
