@@ -72,11 +72,20 @@ fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
         .collect()
 }
 
+fn get_glider_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
+    airspace
+        .iter()
+        .filter(|a| a.stype == "GLIDER")
+        .map(|a| a.name.to_string())
+        .collect()
+}
+
 fn main_view(
     airspace_features: Vec<AirspaceFeature>,
     loa_features: Vec<LoaFeature>,
     rat_features: Vec<RatFeature>,
 ) -> impl IntoView {
+    let glider_names = get_glider_names(&airspace_features);
     let loa_names = get_loa_names(&loa_features);
     let rat_names = get_rat_names(&rat_features);
     let mut wave_names = get_wave_names(&airspace_features);
@@ -100,7 +109,7 @@ fn main_view(
     let tab_names = vec!["Main", "Option", "Extra", "NOTAM", "About"];
 
     let children = vec![
-        airspace_tab().into_any(),
+        airspace_tab(glider_names).into_any(),
         option_tab().into_any(),
         extra_tab(
             vec![
