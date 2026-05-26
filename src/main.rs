@@ -61,13 +61,14 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> Vec<String> {
     // Remove duplicates
     let mut seen = HashSet::new();
     names.retain(|item| seen.insert(item.clone()));
+    names.sort();
     names
 }
 
 fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
     airspace
         .iter()
-        .filter(|a| a.stype == "NSGA")
+        .filter(|a| vec!["NSGA", "TRAG"].contains(&(a.stype.as_str())))
         .map(|a| a.name.to_string())
         .collect()
 }
