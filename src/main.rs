@@ -1,10 +1,12 @@
 use std::collections::HashSet;
 
 use codee::string::JsonSerdeCodec;
+use gloo::file::{Blob, ObjectUrl};
 use gloo::net::http::Request;
 use leptos::ev;
-use leptos::html::{a, button, div, header, p};
+use leptos::html::{A, a, button, div, header, p};
 use leptos::prelude::*;
+use leptos::web_sys;
 use leptos_use::storage::use_local_storage;
 
 use components::{
@@ -29,12 +31,13 @@ fn app() -> impl IntoView {
             (async_airspace.get(), async_loa.get(), async_rat.get())
         {
             if let (Some(airspace_text), Some(loa_text), Some(rat_text)) = (airspace, loa, rat) {
-                let airspace_features = parse_airspace(&airspace_text);
+                let (airspace_features, airac_date) = parse_airspace(&airspace_text);
                 let loa_features = parse_loa(&loa_text);
                 let rat_features = parse_rat(&rat_text);
 
                 // Create reactive view
-                let view_fn = move || main_view(airspace_features, loa_features, rat_features);
+                let view_fn =
+                    move || main_view(airspace_features, loa_features, rat_features, airac_date);
                 view_fn().into_any()
             } else {
                 p().child("Error getting airspace data").into_any()
@@ -85,6 +88,7 @@ fn main_view(
     airspace_features: Vec<AirspaceFeature>,
     loa_features: Vec<LoaFeature>,
     rat_features: Vec<RatFeature>,
+    airac_date: String,
 ) -> impl IntoView {
     let glider_names = get_glider_names(&airspace_features);
     let loa_names = get_loa_names(&loa_features);
@@ -101,10 +105,30 @@ fn main_view(
     provide_context(settings);
     provide_context(set_settings);
 
+    let download_node_ref = NodeRef::<A>::new();
+
     // Download button callback
     let download = move |_| {
+        let _user_agent = web_sys::window()
+            .and_then(|w| w.navigator().user_agent().ok())
+            .unwrap_or_default();
+
         // Store settings
         set_local_settings.set(settings.get_untracked());
+
+        // Create download data
+        let blob = Blob::new("Download data");
+        let object_url = ObjectUrl::from(blob);
+        let fname = if settings.get().format == "overlay" {
+            "overlay.txt"
+        } else {
+            "notoverlay.txt"
+        };
+
+        let a = download_node_ref.get().unwrap();
+        a.set_download(fname);
+        a.set_href(&object_url);
+        a.click();
     };
 
     let tab_names = vec!["Main", "Option", "Extra", "NOTAM", "About"];
@@ -157,9 +181,11 @@ fn main_view(
                     .child("Get Airspace"),
                 a().id("airac-button")
                     .class("button is-text is-pulled-right")
-                    .child(format!("AIRAC: {}", "TODO")),
+                    .child(format!("AIRAC: {}", airac_date)),
             )),
         ),
+        // For data download
+        a().hidden(true).node_ref(download_node_ref),
     )
 }
 

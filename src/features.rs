@@ -1,6 +1,5 @@
-use std::io::BufReader;
-
-use geojson::FeatureReader;
+use geojson::FeatureCollection;
+use geojson::de::deserialize_feature_collection_str_to_vec;
 
 #[derive(serde::Deserialize)]
 pub struct AirspaceFeature {
@@ -24,38 +23,29 @@ pub struct RatFeature {
     //geometry: geo::geometry::Geometry,
 }
 
-pub fn parse_airspace(text: &String) -> Vec<AirspaceFeature> {
-    let io_reader = BufReader::new(text.as_bytes());
-    let feature_reader = FeatureReader::from_reader(io_reader);
-
-    feature_reader
-        .deserialize::<AirspaceFeature>()
+pub fn parse_airspace(text: &String) -> (Vec<AirspaceFeature>, String) {
+    let fc = text
+        .parse::<FeatureCollection>()
+        .expect("invalid airspace GeoJSON");
+    let airac_date = fc
+        .foreign_members
+        .expect("missing foreign members")
+        .get("airac_date")
+        .expect("missing AIRAC date")
+        .as_str()
         .unwrap()
-        .into_iter()
-        .map(|f| f.expect("valid airspace feature"))
-        .collect()
+        .to_string();
+
+    let features =
+        deserialize_feature_collection_str_to_vec(text).expect("can't deserialize airspace data");
+
+    (features, airac_date)
 }
 
 pub fn parse_loa(text: &String) -> Vec<LoaFeature> {
-    let io_reader = BufReader::new(text.as_bytes());
-    let feature_reader = FeatureReader::from_reader(io_reader);
-
-    feature_reader
-        .deserialize::<LoaFeature>()
-        .unwrap()
-        .into_iter()
-        .map(|f| f.expect("valid LOA feature"))
-        .collect()
+    deserialize_feature_collection_str_to_vec(text).expect("can't deserialize LOA data")
 }
 
 pub fn parse_rat(text: &String) -> Vec<RatFeature> {
-    let io_reader = BufReader::new(text.as_bytes());
-    let feature_reader = FeatureReader::from_reader(io_reader);
-
-    feature_reader
-        .deserialize::<RatFeature>()
-        .unwrap()
-        .into_iter()
-        .map(|f| f.expect("valid RAT feature"))
-        .collect()
+    deserialize_feature_collection_str_to_vec(text).expect("can't deserialize RAT data")
 }

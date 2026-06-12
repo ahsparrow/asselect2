@@ -30,8 +30,8 @@ pub fn option_tab() -> impl IntoView {
                 getter,
                 "Format",
                 "format",
-                &vec!["OpenAir", "RA(T) Only", "Competition"],
-                &vec!["openair", "ratonly", "competition"],
+                &vec!["OpenAir", "RA(T) Only", "Competition", "Overlay Only"],
+                &vec!["openair", "ratonly", "competition", "overlay"],
             )),
             div().class("column is-one-third").child(select_field(
                 setter,
