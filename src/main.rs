@@ -181,6 +181,7 @@ fn main_view(
                     .child("Get Airspace"),
                 a().id("airac-button")
                     .class("button is-text is-pulled-right")
+                    .attr("href", format!("https://www.aurora.nats.co.uk/htmlAIP/Publications/{}-AIRAC/html/index-en-GB.html", airac_date))
                     .child(format!("AIRAC: {}", airac_date)),
             )),
         ),
