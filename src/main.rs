@@ -142,11 +142,7 @@ fn main_view(
                 extra_panel(loa_names, ExtraType::Loa).into_any(),
                 extra_panel(wave_names, ExtraType::Wave).into_any(),
             ],
-            vec![
-                "Temporary Restrictions",
-                "Letters of Agreement",
-                "Wave Boxes",
-            ],
+            vec!["Temporary Restrictions", "Local Agreements", "Wave Boxes"],
             vec![ExtraType::Rat, ExtraType::Loa, ExtraType::Wave],
         )
         .into_any(),
