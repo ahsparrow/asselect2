@@ -16,13 +16,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum ExtraType {
-    Rat,
-    Loa,
-    Wave,
-}
-
 // Settings
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Settings {
@@ -107,33 +100,51 @@ impl Settings {
         }
     }
 
-    pub fn set_extra(&mut self, id: ExtraType, value: &str, add: bool) {
-        let x = match id {
-            ExtraType::Rat => &mut self.rat,
-            ExtraType::Loa => &mut self.loa,
-            ExtraType::Wave => &mut self.wave,
-        };
-
+    pub fn set_loa(&mut self, value: &str, add: bool) {
         if add {
-            x.insert(value.to_string());
+            self.loa.insert(value.to_string());
         } else {
-            x.remove(value);
+            self.loa.remove(value);
         }
     }
 
-    pub fn get_extra(&self, id: ExtraType) -> &HashSet<String> {
-        match id {
-            ExtraType::Rat => &self.rat,
-            ExtraType::Loa => &self.loa,
-            ExtraType::Wave => &self.wave,
+    pub fn get_loa(&self) -> &HashSet<String> {
+        &self.loa
+    }
+
+    pub fn clear_loa(&mut self) {
+        self.loa.clear();
+    }
+
+    pub fn set_rat(&mut self, value: &str, add: bool) {
+        if add {
+            self.rat.insert(value.to_string());
+        } else {
+            self.rat.remove(value);
         }
     }
 
-    pub fn clear_extra(&mut self, id: ExtraType) {
-        match id {
-            ExtraType::Rat => &self.rat.clear(),
-            ExtraType::Loa => &self.loa.clear(),
-            ExtraType::Wave => &self.wave.clear(),
-        };
+    pub fn get_rat(&self) -> &HashSet<String> {
+        &self.rat
+    }
+
+    pub fn clear_rat(&mut self) {
+        self.rat.clear();
+    }
+
+    pub fn set_wave(&mut self, value: &str, add: bool) {
+        if add {
+            self.wave.insert(value.to_string());
+        } else {
+            self.wave.remove(value);
+        }
+    }
+
+    pub fn get_wave(&self) -> &HashSet<String> {
+        &self.wave
+    }
+
+    pub fn clear_wave(&mut self) {
+        self.wave.clear();
     }
 }

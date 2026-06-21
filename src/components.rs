@@ -15,9 +15,11 @@
 //
 pub mod about_tab;
 pub mod airspace_tab;
-pub mod extra_panel;
 pub mod extra_tab;
+pub mod loa_panel;
 pub mod notam_tab;
 pub mod option_tab;
+pub mod rat_panel;
 pub mod select_field;
 pub mod tabs;
+pub mod wave_panel;

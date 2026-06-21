@@ -10,11 +10,12 @@ use leptos::web_sys;
 use leptos_use::storage::use_local_storage;
 
 use components::{
-    about_tab::about_tab, airspace_tab::airspace_tab, extra_panel::extra_panel,
-    extra_tab::extra_tab, notam_tab::notam_tab, option_tab::option_tab, tabs::tabs,
+    about_tab::about_tab, airspace_tab::airspace_tab, extra_tab::extra_tab, loa_panel::loa_panel,
+    notam_tab::notam_tab, option_tab::option_tab, rat_panel::rat_panel, tabs::tabs,
+    wave_panel::wave_panel,
 };
 use features::{AirspaceFeature, LoaFeature, RatFeature, parse_airspace, parse_loa, parse_rat};
-use settings::{ExtraType, Settings};
+use settings::Settings;
 
 mod components;
 mod features;
@@ -109,12 +110,14 @@ fn main_view(
 
     // Download button callback
     let download = move |_| {
+        // Store settings
+        let s = settings.get_untracked();
+        set_local_settings.set(s);
+
+        // Browser user agent
         let _user_agent = web_sys::window()
             .and_then(|w| w.navigator().user_agent().ok())
             .unwrap_or_default();
-
-        // Store settings
-        set_local_settings.set(settings.get_untracked());
 
         // Create download data
         let blob = Blob::new("Download data");
@@ -137,13 +140,9 @@ fn main_view(
         airspace_tab(glider_names).into_any(),
         option_tab().into_any(),
         extra_tab(
-            vec![
-                extra_panel(rat_names, ExtraType::Rat).into_any(),
-                extra_panel(loa_names, ExtraType::Loa).into_any(),
-                extra_panel(wave_names, ExtraType::Wave).into_any(),
-            ],
-            vec!["Temporary Restrictions", "Local Agreements", "Wave Boxes"],
-            vec![ExtraType::Rat, ExtraType::Loa, ExtraType::Wave],
+            rat_panel(rat_names).into_any(),
+            loa_panel(loa_names).into_any(),
+            wave_panel(wave_names).into_any(),
         )
         .into_any(),
         notam_tab().into_any(),
