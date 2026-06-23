@@ -50,15 +50,15 @@ fn app() -> impl IntoView {
     }
 }
 
+// Get list of RA(T)s (maintaining original order)
 fn get_rat_names(rats: &Vec<RatFeature>) -> Vec<String> {
     let mut names: Vec<String> = rats.iter().map(|f| f.group_name.to_string()).collect();
 
-    // Remove duplicates
-    let mut seen = HashSet::new();
-    names.retain(|item| seen.insert(item.clone()));
+    names.dedup();
     names
 }
 
+// Get alphabetically ordered map of LOAs
 fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
     // de-duplicated LOA names
     let names: HashSet<&str> = loas.into_iter().map(|f| f.group_name.as_str()).collect();
@@ -71,7 +71,7 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
                 n.to_string(),
                 loas.iter()
                     .filter(|x| x.group_name == *n && x.aref.is_some())
-                    .map(|x| x.aref.as_ref().unwrap().clone())
+                    .map(|x| x.aref.as_ref().unwrap().to_string())
                     .collect(),
             )
         })
