@@ -77,7 +77,7 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
         .collect();
 
     // map of LOA name to mutually exclusive LOAs
-    let exclusive_loas: BTreeMap<String, Vec<String>> = names
+    names
         .iter()
         .map(|n1| {
             (
@@ -97,9 +97,7 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
                     .collect(),
             )
         })
-        .collect();
-
-    exclusive_loas
+        .collect()
 }
 
 fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
