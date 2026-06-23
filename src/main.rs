@@ -60,6 +60,7 @@ fn get_rat_names(rats: &Vec<RatFeature>) -> Vec<String> {
 }
 
 fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
+    // de-duplicated LOA names
     let names: HashSet<&str> = loas.into_iter().map(|f| f.group_name.as_str()).collect();
 
     // map of LOA name to replacement identifiers
@@ -77,23 +78,17 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
         .collect();
 
     // map of LOA name to mutually exclusive LOAs
-    names
+    replace_ids
         .iter()
-        .map(|n1| {
+        .map(|(n1, ids)| {
             (
                 n1.to_string(),
-                names
+                replace_ids
                     .iter()
-                    .filter(|n2| {
-                        n1 != *n2
-                            && replace_ids
-                                .get(*n1)
-                                .unwrap()
-                                .intersection(replace_ids.get(**n2).unwrap())
-                                .count()
-                                != 0
+                    .filter(|(n2, other_ids)| {
+                        n1 != *n2 && ids.intersection(&other_ids).count() != 0
                     })
-                    .map(|n| n.to_string())
+                    .map(|(n, _)| n.to_string())
                     .collect(),
             )
         })
