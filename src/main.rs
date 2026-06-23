@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use codee::string::JsonSerdeCodec;
 use gloo::file::{Blob, ObjectUrl};
@@ -59,14 +59,47 @@ fn get_rat_names(rats: &Vec<RatFeature>) -> Vec<String> {
     names
 }
 
-fn get_loa_names(loas: &Vec<LoaFeature>) -> Vec<String> {
-    let mut names: Vec<String> = loas.iter().map(|f| f.group_name.to_string()).collect();
+fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
+    let names: HashSet<&str> = loas.into_iter().map(|f| f.group_name.as_str()).collect();
 
-    // Remove duplicates
-    let mut seen = HashSet::new();
-    names.retain(|item| seen.insert(item.clone()));
-    names.sort();
-    names
+    // map of LOA name to replacement identifiers
+    let replace_ids: HashMap<String, HashSet<String>> = names
+        .iter()
+        .map(|n| {
+            (
+                n.to_string(),
+                loas.iter()
+                    .filter(|x| x.group_name == *n && x.aref.is_some())
+                    .map(|x| x.aref.as_ref().unwrap().clone())
+                    .collect(),
+            )
+        })
+        .collect();
+
+    // map of LOA name to mutually exclusive LOAs
+    let exclusive_loas: BTreeMap<String, Vec<String>> = names
+        .iter()
+        .map(|n1| {
+            (
+                n1.to_string(),
+                names
+                    .iter()
+                    .filter(|n2| {
+                        n1 != *n2
+                            && replace_ids
+                                .get(*n1)
+                                .unwrap()
+                                .intersection(replace_ids.get(**n2).unwrap())
+                                .count()
+                                != 0
+                    })
+                    .map(|n| n.to_string())
+                    .collect(),
+            )
+        })
+        .collect();
+
+    exclusive_loas
 }
 
 fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
@@ -92,7 +125,7 @@ fn main_view(
     airac_date: String,
 ) -> impl IntoView {
     let glider_names = get_glider_names(&airspace_features);
-    let loa_names = get_loa_names(&loa_features);
+    let exclusive_loas = get_loa_names(&loa_features);
     let rat_names = get_rat_names(&rat_features);
     let mut wave_names = get_wave_names(&airspace_features);
     wave_names.sort();
@@ -141,7 +174,7 @@ fn main_view(
         option_tab().into_any(),
         extra_tab(
             rat_panel(rat_names).into_any(),
-            loa_panel(loa_names).into_any(),
+            loa_panel(exclusive_loas).into_any(),
             wave_panel(wave_names).into_any(),
         )
         .into_any(),

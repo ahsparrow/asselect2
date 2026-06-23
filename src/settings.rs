@@ -100,12 +100,12 @@ impl Settings {
         }
     }
 
-    pub fn set_loa(&mut self, value: &str, add: bool) {
-        if add {
-            self.loa.insert(value.to_string());
-        } else {
-            self.loa.remove(value);
-        }
+    pub fn set_loa(&mut self, value: &str) {
+        self.loa.insert(value.to_string());
+    }
+
+    pub fn unset_loa(&mut self, value: &str) {
+        self.loa.remove(value);
     }
 
     pub fn get_loa(&self) -> &HashSet<String> {

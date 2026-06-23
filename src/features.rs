@@ -12,6 +12,7 @@ pub struct AirspaceFeature {
 #[derive(serde::Deserialize)]
 pub struct LoaFeature {
     pub group_name: String,
+    pub aref: Option<String>,
     //#[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     //geometry: geo::geometry::Geometry,
 }
