@@ -15,10 +15,12 @@ use components::{
     wave_panel::wave_panel,
 };
 use features::{AirspaceFeature, LoaFeature, RatFeature, parse_airspace, parse_loa, parse_rat};
+use openair::openair;
 use settings::Settings;
 
 mod components;
 mod features;
+mod openair;
 mod settings;
 
 fn app() -> impl IntoView {
@@ -135,27 +137,38 @@ fn main_view(
     let download_node_ref = NodeRef::<A>::new();
 
     // Download button callback
+    let airac_date_string = airac_date.clone();
     let download = move |_| {
-        // Store settings
-        let s = settings.get_untracked();
-        set_local_settings.set(s);
+        let untracked_settings = settings.get_untracked();
 
         // Browser user agent
-        let _user_agent = web_sys::window()
+        let user_agent = web_sys::window()
             .and_then(|w| w.navigator().user_agent().ok())
             .unwrap_or_default();
 
+        // make openair data
+        let od = openair(
+            &airspace_features,
+            &untracked_settings,
+            &airac_date_string,
+            &user_agent,
+        );
+
+        // Store settings
+        set_local_settings.set(untracked_settings);
+
         // Create download data
-        let blob = Blob::new("Download data");
+        let blob = Blob::new(od.expect("format error").as_str());
         let object_url = ObjectUrl::from(blob);
+
         let fname = if settings.get().format == "overlay" {
-            "overlay.txt"
+            "overlay.txt".to_string()
         } else {
-            "notoverlay.txt"
+            format!("uk{}.txt", &airac_date_string)
         };
 
         let a = download_node_ref.get().unwrap();
-        a.set_download(fname);
+        a.set_download(&fname);
         a.set_href(&object_url);
         a.click();
     };

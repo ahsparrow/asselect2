@@ -1,3 +1,4 @@
+use geo::geometry::Geometry;
 use geojson::FeatureCollection;
 use geojson::de::deserialize_feature_collection_str_to_vec;
 
@@ -5,8 +6,21 @@ use geojson::de::deserialize_feature_collection_str_to_vec;
 pub struct AirspaceFeature {
     pub name: String,
     pub stype: String,
-    //#[serde(deserialize_with = "geojson::de::deserialize_geometry")]
-    //geometry: geo::geometry::Geometry,
+    #[serde(rename = "lowerLimit")]
+    pub lower_limit: i32,
+    #[serde(rename = "lowerLimit_uom")]
+    pub lower_limit_uom: String,
+    #[serde(rename = "lowerLimitReference")]
+    pub lower_limit_reference: String,
+    #[serde(rename = "upperLimit")]
+    pub upper_limit: i32,
+    #[serde(rename = "upperLimit_uom")]
+    pub upper_limit_uom: String,
+    #[serde(rename = "upperLimitReference")]
+    pub upper_limit_reference: String,
+    pub radius: Option<f64>,
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    pub geometry: Geometry,
 }
 
 #[derive(serde::Deserialize)]

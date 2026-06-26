@@ -4,6 +4,7 @@ version = "1.0.0"
 edition = "2024"
 
 [dependencies]
+chrono = "0.4.45"
 codee = { version = "0.3.5", features = ["json_serde"] }
 console_error_panic_hook = "0.1.7"
 geo = "0.33.1"
@@ -12,3 +13,4 @@ gloo = { version = "0.11", features = ["net"] }
 leptos = { version = "0.8", features = ["csr"] }
 leptos-use = { version = "0.18.3", features = ["storage"] }
 serde = "1.0.228"
+textwrap = "0.16.2"
