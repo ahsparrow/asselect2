@@ -4,8 +4,9 @@ use geojson::de::deserialize_feature_collection_str_to_vec;
 
 #[derive(serde::Deserialize)]
 pub struct AirspaceFeature {
+    pub identifier: String,
     pub name: String,
-    pub stype: String,
+    pub atype: String,
     #[serde(rename = "lowerLimit")]
     pub lower_limit: i32,
     #[serde(rename = "lowerLimit_uom")]
@@ -25,7 +26,7 @@ pub struct AirspaceFeature {
 
 #[derive(serde::Deserialize)]
 pub struct LoaFeature {
-    pub group_name: String,
+    pub loa_name: String,
     pub aref: Option<String>,
     //#[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     //geometry: geo::geometry::Geometry,
@@ -33,7 +34,7 @@ pub struct LoaFeature {
 
 #[derive(serde::Deserialize)]
 pub struct RatFeature {
-    pub group_name: String,
+    pub rat_name: String,
     //#[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     //geometry: geo::geometry::Geometry,
 }

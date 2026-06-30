@@ -6,7 +6,7 @@ use geo::Point;
 use geo::geometry::Geometry;
 use textwrap::{fill, indent};
 
-use crate::features::AirspaceFeature;
+use crate::features::{AirspaceFeature, LoaFeature};
 use crate::settings::Settings;
 
 struct MyPoint(Point);
@@ -52,9 +52,8 @@ fn header(
         "* UK Airspace\n\
         * Alan Sparrow (airspace@asselect.uk)\n\
         *\n\
-        * I have tried to make this data as accurate as possible but\n\
-        * there will still be errors. Don't blame me if you go somewhere you\n\
-        * shouldn't have gone.\n\
+        * I have tried my best to make this data accurate but there will still\n\
+        * be errors. Don't blame me if you go somewhere you shouldn't have gone.\n\
         *\n\
         * To the extent possible under law, Alan Sparrow has waived all\n\
         * copyright and related or neighbouring rights to this file. The data\n\
@@ -100,8 +99,22 @@ fn write_geometry(buf: &mut String, feature: &AirspaceFeature) -> Result<(), fmt
     Ok(())
 }
 
+fn make_air_filter(
+    settings: &Settings,
+    loa_replace: &Vec<String>,
+) -> impl Fn(&&AirspaceFeature) -> bool {
+    |feature| {
+        let exclude = match feature.atype.as_str() {
+            "TRAINING" => settings.unlicensed == "no",
+            _ => false,
+        };
+        !(exclude || loa_replace.contains(&feature.identifier))
+    }
+}
+
 pub fn openair(
     airspace: &Vec<AirspaceFeature>,
+    loa: &Vec<LoaFeature>,
     settings: &Settings,
     airac_date: &str,
     user_agent: &str,
@@ -116,7 +129,14 @@ pub fn openair(
         &settings,
     )?;
 
-    let filtered_airspace = airspace.iter().filter(|_| true);
+    let loa_replace_ids: Vec<String> = loa
+        .iter()
+        .filter(|x| settings.loa.contains(&x.loa_name) && x.aref.is_some())
+        .map(|x| x.aref.as_ref().unwrap().clone())
+        .collect();
+
+    let air_filter = make_air_filter(&settings, &loa_replace_ids);
+    let filtered_airspace = airspace.iter().filter(air_filter);
 
     for a in filtered_airspace {
         write!(s, "*\n")?;

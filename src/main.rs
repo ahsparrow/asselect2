@@ -54,7 +54,7 @@ fn app() -> impl IntoView {
 
 // Get list of RA(T)s (maintaining original order)
 fn get_rat_names(rats: &Vec<RatFeature>) -> Vec<String> {
-    let mut names: Vec<String> = rats.iter().map(|f| f.group_name.to_string()).collect();
+    let mut names: Vec<String> = rats.iter().map(|f| f.rat_name.to_string()).collect();
 
     names.dedup();
     names
@@ -63,7 +63,7 @@ fn get_rat_names(rats: &Vec<RatFeature>) -> Vec<String> {
 // Get alphabetically ordered map of LOAs
 fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
     // de-duplicated LOA names
-    let names: HashSet<&str> = loas.into_iter().map(|f| f.group_name.as_str()).collect();
+    let names: HashSet<&str> = loas.into_iter().map(|f| f.loa_name.as_str()).collect();
 
     // map of LOA name to replacement identifiers
     let replace_ids: HashMap<String, HashSet<String>> = names
@@ -72,7 +72,7 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
             (
                 n.to_string(),
                 loas.iter()
-                    .filter(|x| x.group_name == *n && x.aref.is_some())
+                    .filter(|x| x.loa_name == *n && x.aref.is_some())
                     .map(|x| x.aref.as_ref().unwrap().to_string())
                     .collect(),
             )
@@ -100,7 +100,7 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
 fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
     airspace
         .iter()
-        .filter(|a| vec!["NSGA", "TRAG"].contains(&(a.stype.as_str())))
+        .filter(|a| vec!["NSGA", "TRAG"].contains(&(a.atype.as_str())))
         .map(|a| a.name.to_string())
         .collect()
 }
@@ -108,7 +108,7 @@ fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
 fn get_glider_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
     airspace
         .iter()
-        .filter(|a| a.stype == "GLIDER")
+        .filter(|a| a.atype == "GLIDER")
         .map(|a| a.name.to_string())
         .collect()
 }
@@ -149,6 +149,7 @@ fn main_view(
         // make openair data
         let od = openair(
             &airspace_features,
+            &loa_features,
             &untracked_settings,
             &airac_date_string,
             &user_agent,
