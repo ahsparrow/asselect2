@@ -14,3 +14,4 @@ leptos = { version = "0.8", features = ["csr"] }
 leptos-use = { version = "0.18.3", features = ["storage"] }
 serde = "1.0.228"
 textwrap = "0.16.2"
+uuid = { version = "1.23.4", features = ["js", "serde", "v4", "v5"] }

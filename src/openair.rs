@@ -5,8 +5,9 @@ use chrono::Utc;
 use geo::Point;
 use geo::geometry::Geometry;
 use textwrap::{fill, indent};
+use uuid::Uuid;
 
-use crate::features::{AirspaceFeature, LoaFeature};
+use crate::features::AirspaceFeature;
 use crate::settings::Settings;
 
 struct MyPoint(Point);
@@ -101,7 +102,7 @@ fn write_geometry(buf: &mut String, feature: &AirspaceFeature) -> Result<(), fmt
 
 fn make_air_filter(
     settings: &Settings,
-    loa_replace: &Vec<String>,
+    loa_replace: &Vec<Uuid>,
 ) -> impl Fn(&&AirspaceFeature) -> bool {
     |feature| {
         let exclude = match feature.atype.as_str() {
@@ -114,7 +115,7 @@ fn make_air_filter(
 
 pub fn openair(
     airspace: &Vec<AirspaceFeature>,
-    loa: &Vec<LoaFeature>,
+    loa: &Vec<AirspaceFeature>,
     settings: &Settings,
     airac_date: &str,
     user_agent: &str,
@@ -129,9 +130,10 @@ pub fn openair(
         &settings,
     )?;
 
-    let loa_replace_ids: Vec<String> = loa
+    /*
+    let loa_replace_ids: Vec<Uuid> = loa
         .iter()
-        .filter(|x| settings.loa.contains(&x.loa_name) && x.aref.is_some())
+        .filter(|x| settings.loa.contains(&x.group_name) && x.aref.is_some())
         .map(|x| x.aref.as_ref().unwrap().clone())
         .collect();
 
@@ -154,5 +156,6 @@ pub fn openair(
         )?;
         write_geometry(&mut s, &a)?;
     }
-    Ok(s)
+    */
+    Ok("openair".to_string())
 }

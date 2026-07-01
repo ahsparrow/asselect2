@@ -5,6 +5,7 @@ use gloo::file::{Blob, ObjectUrl};
 use gloo::net::http::Request;
 use leptos::ev;
 use leptos::html::{A, a, button, div, header, p};
+use leptos::logging::log;
 use leptos::prelude::*;
 use leptos::web_sys;
 use leptos_use::storage::use_local_storage;
@@ -14,13 +15,12 @@ use components::{
     notam_tab::notam_tab, option_tab::option_tab, rat_panel::rat_panel, tabs::tabs,
     wave_panel::wave_panel,
 };
-use features::{AirspaceFeature, LoaFeature, RatFeature, parse_airspace, parse_loa, parse_rat};
-use openair::openair;
+use features::{AirspaceFeature, parse_airspace, parse_loa, parse_rat, serialize_airspace};
+//use openair::openair;
 use settings::Settings;
 
 mod components;
 mod features;
-mod openair;
 mod settings;
 
 fn app() -> impl IntoView {
@@ -38,6 +38,8 @@ fn app() -> impl IntoView {
                 let loa_features = parse_loa(&loa_text);
                 let rat_features = parse_rat(&rat_text);
 
+                log!("{}", airspace_features[0].identifier);
+
                 // Create reactive view
                 let view_fn =
                     move || main_view(airspace_features, loa_features, rat_features, airac_date);
@@ -53,17 +55,23 @@ fn app() -> impl IntoView {
 }
 
 // Get list of RA(T)s (maintaining original order)
-fn get_rat_names(rats: &Vec<RatFeature>) -> Vec<String> {
-    let mut names: Vec<String> = rats.iter().map(|f| f.rat_name.to_string()).collect();
+fn get_rat_names(rats: &Vec<AirspaceFeature>) -> Vec<String> {
+    let mut names: Vec<String> = rats
+        .iter()
+        .map(|f| f.group_name.as_ref().unwrap().to_string())
+        .collect();
 
     names.dedup();
     names
 }
 
 // Get alphabetically ordered map of LOAs
-fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
+fn get_loa_names(loas: &Vec<AirspaceFeature>) -> BTreeMap<String, Vec<String>> {
     // de-duplicated LOA names
-    let names: HashSet<&str> = loas.into_iter().map(|f| f.loa_name.as_str()).collect();
+    let names: HashSet<&str> = loas
+        .into_iter()
+        .map(|f| f.group_name.as_ref().unwrap().as_str())
+        .collect();
 
     // map of LOA name to replacement identifiers
     let replace_ids: HashMap<String, HashSet<String>> = names
@@ -72,7 +80,7 @@ fn get_loa_names(loas: &Vec<LoaFeature>) -> BTreeMap<String, Vec<String>> {
             (
                 n.to_string(),
                 loas.iter()
-                    .filter(|x| x.loa_name == *n && x.aref.is_some())
+                    .filter(|x| x.group_name.as_ref().unwrap() == *n && x.aref.is_some())
                     .map(|x| x.aref.as_ref().unwrap().to_string())
                     .collect(),
             )
@@ -115,8 +123,8 @@ fn get_glider_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
 
 fn main_view(
     airspace_features: Vec<AirspaceFeature>,
-    loa_features: Vec<LoaFeature>,
-    rat_features: Vec<RatFeature>,
+    loa_features: Vec<AirspaceFeature>,
+    rat_features: Vec<AirspaceFeature>,
     airac_date: String,
 ) -> impl IntoView {
     let glider_names = get_glider_names(&airspace_features);
@@ -126,7 +134,7 @@ fn main_view(
     wave_names.sort();
 
     // Local settings storage
-    let (local_settings, set_local_settings, _) =
+    let (local_settings, _set_local_settings, _) =
         use_local_storage::<Settings, JsonSerdeCodec>("settings");
 
     // Make copy of settings so store value is only updated on download
@@ -137,17 +145,23 @@ fn main_view(
     let download_node_ref = NodeRef::<A>::new();
 
     // Download button callback
-    let airac_date_string = airac_date.clone();
+    let _airac_date_string = airac_date.clone();
     let download = move |_| {
-        let untracked_settings = settings.get_untracked();
+        let _untracked_settings = settings.get_untracked();
 
+        // Browser user agent
+        let _user_agent = web_sys::window()
+            .and_then(|w| w.navigator().user_agent().ok())
+            .unwrap_or_default();
+
+        /*
         // Browser user agent
         let user_agent = web_sys::window()
             .and_then(|w| w.navigator().user_agent().ok())
             .unwrap_or_default();
 
         // make openair data
-        let od = openair(
+        let _od = openair(
             &airspace_features,
             &loa_features,
             &untracked_settings,
@@ -159,6 +173,8 @@ fn main_view(
         set_local_settings.set(untracked_settings);
 
         // Create download data
+        let a = download_node_ref.get().unwrap();
+
         let blob = Blob::new(od.expect("format error").as_str());
         let object_url = ObjectUrl::from(blob);
 
@@ -168,8 +184,16 @@ fn main_view(
             format!("uk{}.txt", &airac_date_string)
         };
 
-        let a = download_node_ref.get().unwrap();
         a.set_download(&fname);
+        a.set_href(&object_url);
+        a.click();
+        */
+
+        let blob = Blob::new(serialize_airspace(&airspace_features).as_str());
+        let object_url = ObjectUrl::from(blob);
+
+        let a = download_node_ref.get().unwrap();
+        a.set_download("asselect.geojson");
         a.set_href(&object_url);
         a.click();
     };
