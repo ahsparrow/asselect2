@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fmt;
 use std::fmt::Write;
 
@@ -11,6 +12,32 @@ use crate::features::AirspaceFeature;
 use crate::settings::Settings;
 
 struct MyPoint(Point);
+
+pub fn normalise_limit(limit: i32, _uom: &str, reference: &str) -> i32 {
+    match reference {
+        "SFC" => 0,
+        "MSL" => limit,
+        "STD" => limit * 100,
+        _ => 0,
+    }
+}
+
+pub fn make_air_filter(
+    settings: &Settings,
+    replace_ids: &HashSet<&Uuid>,
+) -> impl Fn(&&AirspaceFeature) -> bool {
+    |a: &&AirspaceFeature| {
+        let exclude = replace_ids.contains(&a.identifier)
+            || a.atype == "GLIDER" && (settings.glider == "no" || settings.home == a.name)
+            || a.atype == "MICROLIGHT" && settings.microlight == "no"
+            || a.atype == "TRAINING" && settings.unlicensed == "no"
+            || vec!["LASER", "GVS", "HIRTA"].contains(&a.atype.as_str())
+            || normalise_limit(a.lower_limit, &a.lower_limit_uom, &a.lower_limit_reference)
+                > settings.max_level.parse::<i32>().unwrap_or(0) * 100;
+
+        !exclude
+    }
+}
 
 fn degrees_to_dms(degrees: f64) -> (u32, u32, u32) {
     let mut sec = (degrees * 3600.0).round() as u32;
@@ -100,22 +127,9 @@ fn write_geometry(buf: &mut String, feature: &AirspaceFeature) -> Result<(), fmt
     Ok(())
 }
 
-fn make_air_filter(
-    settings: &Settings,
-    loa_replace: &Vec<Uuid>,
-) -> impl Fn(&&AirspaceFeature) -> bool {
-    |feature| {
-        let exclude = match feature.atype.as_str() {
-            "TRAINING" => settings.unlicensed == "no",
-            _ => false,
-        };
-        !(exclude || loa_replace.contains(&feature.identifier))
-    }
-}
-
 pub fn openair(
-    airspace: &Vec<AirspaceFeature>,
-    loa: &Vec<AirspaceFeature>,
+    _airspace: &Vec<AirspaceFeature>,
+    _loa: &Vec<AirspaceFeature>,
     settings: &Settings,
     airac_date: &str,
     user_agent: &str,

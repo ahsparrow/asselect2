@@ -47,7 +47,7 @@ impl Default for Settings {
             unlicensed: "no".to_string(),
             microlight: "no".to_string(),
             glider: "no".to_string(),
-            home: "".to_string(),
+            home: "no".to_string(),
             hirta_gvs: "no".to_string(),
             obstacle: "no".to_string(),
             max_level: "660".to_string(),

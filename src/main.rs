@@ -5,21 +5,22 @@ use gloo::file::{Blob, ObjectUrl};
 use gloo::net::http::Request;
 use leptos::ev;
 use leptos::html::{A, a, button, div, header, p};
-use leptos::logging::log;
 use leptos::prelude::*;
 use leptos::web_sys;
 use leptos_use::storage::use_local_storage;
+use uuid::Uuid;
 
 use components::{
     about_tab::about_tab, airspace_tab::airspace_tab, extra_tab::extra_tab, loa_panel::loa_panel,
     notam_tab::notam_tab, option_tab::option_tab, rat_panel::rat_panel, tabs::tabs,
     wave_panel::wave_panel,
 };
+use convert::make_air_filter;
 use features::{AirspaceFeature, parse_airspace, parse_loa, parse_rat, serialize_airspace};
-//use openair::openair;
 use settings::Settings;
 
 mod components;
+mod convert;
 mod features;
 mod settings;
 
@@ -37,8 +38,6 @@ fn app() -> impl IntoView {
                 let (airspace_features, airac_date) = parse_airspace(&airspace_text);
                 let loa_features = parse_loa(&loa_text);
                 let rat_features = parse_rat(&rat_text);
-
-                log!("{}", airspace_features[0].identifier);
 
                 // Create reactive view
                 let view_fn =
@@ -134,7 +133,7 @@ fn main_view(
     wave_names.sort();
 
     // Local settings storage
-    let (local_settings, _set_local_settings, _) =
+    let (local_settings, set_local_settings, _) =
         use_local_storage::<Settings, JsonSerdeCodec>("settings");
 
     // Make copy of settings so store value is only updated on download
@@ -147,7 +146,34 @@ fn main_view(
     // Download button callback
     let _airac_date_string = airac_date.clone();
     let download = move |_| {
-        let _untracked_settings = settings.get_untracked();
+        let untracked_settings = settings.get_untracked();
+
+        // Store settings
+        set_local_settings.set(untracked_settings.clone());
+
+        // Filter LOAs
+        let mut loa: Vec<&AirspaceFeature> = loa_features
+            .iter()
+            .filter(|a| {
+                untracked_settings
+                    .get_loa()
+                    .contains(a.group_name.as_ref().unwrap())
+            })
+            .collect();
+
+        // Airspace volumes to be replaced by LOAs
+        let replace_arefs: HashSet<&Uuid> = loa
+            .iter()
+            .filter(|a| a.aref.is_some())
+            .map(|a| a.aref.as_ref().unwrap())
+            .collect();
+
+        let mut airspace: Vec<&AirspaceFeature> = airspace_features
+            .iter()
+            .filter(make_air_filter(&untracked_settings, &replace_arefs))
+            .collect();
+
+        airspace.append(&mut loa);
 
         // Browser user agent
         let _user_agent = web_sys::window()
@@ -189,7 +215,7 @@ fn main_view(
         a.click();
         */
 
-        let blob = Blob::new(serialize_airspace(&airspace_features).as_str());
+        let blob = Blob::new(serialize_airspace(&airspace).as_str());
         let object_url = ObjectUrl::from(blob);
 
         let a = download_node_ref.get().unwrap();

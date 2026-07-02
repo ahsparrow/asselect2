@@ -55,7 +55,7 @@ pub fn parse_airspace(text: &String) -> (Vec<AirspaceFeature>, String) {
     (features, airac_date)
 }
 
-pub fn serialize_airspace(features: &Vec<AirspaceFeature>) -> String {
+pub fn serialize_airspace(features: &Vec<&AirspaceFeature>) -> String {
     geojson::ser::to_feature_collection_string(features).unwrap()
 }
 
