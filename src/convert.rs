@@ -32,6 +32,7 @@ pub fn make_air_filter(
             || a.atype == "MICROLIGHT" && settings.microlight == "no"
             || a.atype == "TRAINING" && settings.unlicensed == "no"
             || vec!["LASER", "GVS", "HIRTA"].contains(&a.atype.as_str())
+            || (a.atype == "TRAG" || a.atype == "NSGA") && !settings.wave.contains(&a.name)
             || normalise_limit(a.lower_limit, &a.lower_limit_uom, &a.lower_limit_reference)
                 > settings.max_level.parse::<i32>().unwrap_or(0) * 100;
 
