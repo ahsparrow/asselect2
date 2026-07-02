@@ -128,8 +128,7 @@ fn write_geometry(buf: &mut String, feature: &AirspaceFeature) -> Result<(), fmt
 }
 
 pub fn openair(
-    _airspace: &Vec<AirspaceFeature>,
-    _loa: &Vec<AirspaceFeature>,
+    airspace: &Vec<AirspaceFeature>,
     settings: &Settings,
     airac_date: &str,
     user_agent: &str,
@@ -144,17 +143,7 @@ pub fn openair(
         &settings,
     )?;
 
-    /*
-    let loa_replace_ids: Vec<Uuid> = loa
-        .iter()
-        .filter(|x| settings.loa.contains(&x.group_name) && x.aref.is_some())
-        .map(|x| x.aref.as_ref().unwrap().clone())
-        .collect();
-
-    let air_filter = make_air_filter(&settings, &loa_replace_ids);
-    let filtered_airspace = airspace.iter().filter(air_filter);
-
-    for a in filtered_airspace {
+    for a in airspace {
         write!(s, "*\n")?;
         write!(s, "AC G\n")?;
         write!(s, "AN {}\n", a.name)?;
@@ -170,6 +159,5 @@ pub fn openair(
         )?;
         write_geometry(&mut s, &a)?;
     }
-    */
     Ok("openair".to_string())
 }

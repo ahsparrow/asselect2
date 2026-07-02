@@ -15,7 +15,7 @@ use components::{
     notam_tab::notam_tab, option_tab::option_tab, rat_panel::rat_panel, tabs::tabs,
     wave_panel::wave_panel,
 };
-use convert::make_air_filter;
+use convert::{make_air_filter, openair};
 use features::{AirspaceFeature, parse_airspace, parse_loa, parse_rat, serialize_airspace};
 use settings::Settings;
 
@@ -144,7 +144,7 @@ fn main_view(
     let download_node_ref = NodeRef::<A>::new();
 
     // Download button callback
-    let _airac_date_string = airac_date.clone();
+    let airac_date_string = airac_date.clone();
     let download = move |_| {
         let untracked_settings = settings.get_untracked();
 
@@ -168,59 +168,56 @@ fn main_view(
             .map(|a| a.aref.as_ref().unwrap())
             .collect();
 
+        // Filter airspace
         let mut airspace: Vec<&AirspaceFeature> = airspace_features
             .iter()
             .filter(make_air_filter(&untracked_settings, &replace_arefs))
             .collect();
 
+        // Append LOAs
         airspace.append(&mut loa);
 
-        // Browser user agent
-        let _user_agent = web_sys::window()
-            .and_then(|w| w.navigator().user_agent().ok())
-            .unwrap_or_default();
+        // Filter and append RA(T)s
+        let rat = rat_features.iter().filter(|a| {
+            untracked_settings
+                .get_rat()
+                .contains(a.group_name.as_ref().unwrap())
+        });
+        airspace.extend(rat);
 
-        /*
-        // Browser user agent
-        let user_agent = web_sys::window()
-            .and_then(|w| w.navigator().user_agent().ok())
-            .unwrap_or_default();
-
-        // make openair data
-        let _od = openair(
-            &airspace_features,
-            &loa_features,
-            &untracked_settings,
-            &airac_date_string,
-            &user_agent,
-        );
-
-        // Store settings
-        set_local_settings.set(untracked_settings);
-
-        // Create download data
         let a = download_node_ref.get().unwrap();
+        if untracked_settings.format == "geojson" {
+            let blob = Blob::new(serialize_airspace(&airspace).as_str());
+            let object_url = ObjectUrl::from(blob);
 
-        let blob = Blob::new(od.expect("format error").as_str());
-        let object_url = ObjectUrl::from(blob);
-
-        let fname = if settings.get().format == "overlay" {
-            "overlay.txt".to_string()
+            a.set_download("asselect.geojson");
+            a.set_href(&object_url);
         } else {
-            format!("uk{}.txt", &airac_date_string)
-        };
+            // Browser user agent
+            let user_agent = web_sys::window()
+                .and_then(|w| w.navigator().user_agent().ok())
+                .unwrap_or_default();
 
-        a.set_download(&fname);
-        a.set_href(&object_url);
-        a.click();
-        */
+            // make openair data
+            let od = openair(
+                &airspace_features,
+                &untracked_settings,
+                &airac_date_string,
+                &user_agent,
+            );
 
-        let blob = Blob::new(serialize_airspace(&airspace).as_str());
-        let object_url = ObjectUrl::from(blob);
+            let blob = Blob::new(od.expect("format error").as_str());
+            let object_url = ObjectUrl::from(blob);
 
-        let a = download_node_ref.get().unwrap();
-        a.set_download("asselect.geojson");
-        a.set_href(&object_url);
+            let fname = if settings.get().format == "overlay" {
+                "overlay.txt".to_string()
+            } else {
+                format!("uk{}.txt", &airac_date_string)
+            };
+
+            a.set_download(&fname);
+            a.set_href(&object_url);
+        }
         a.click();
     };
 
