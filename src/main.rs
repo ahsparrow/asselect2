@@ -15,8 +15,8 @@ use components::{
     notam_tab::notam_tab, option_tab::option_tab, rat_panel::rat_panel, tabs::tabs,
     wave_panel::wave_panel,
 };
-use convert::{make_air_filter, openair};
-use features::{AirspaceFeature, parse_airspace, parse_loa, parse_rat, serialize_airspace};
+use convert::{make_air_filter, oa_type, openair, serialize_airspace};
+use features::{AirspaceFeature, parse_airspace, parse_loa, parse_rat};
 use settings::Settings;
 
 mod components;
@@ -185,9 +185,15 @@ fn main_view(
         });
         airspace.extend(rat);
 
+        // OpenAir types
+        let oatypes: Vec<String> = airspace
+            .iter()
+            .map(|a| oa_type(a, &untracked_settings))
+            .collect();
+
         let a = download_node_ref.get().unwrap();
         if untracked_settings.format == "geojson" {
-            let blob = Blob::new(serialize_airspace(&airspace).as_str());
+            let blob = Blob::new(serialize_airspace(&airspace, oatypes).as_str());
             let object_url = ObjectUrl::from(blob);
 
             a.set_download("asselect.geojson");
@@ -204,6 +210,7 @@ fn main_view(
                 &untracked_settings,
                 &airac_date_string,
                 &user_agent,
+                oatypes,
             );
 
             let blob = Blob::new(od.expect("format error").as_str());

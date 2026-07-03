@@ -3,13 +3,11 @@ use geojson::FeatureCollection;
 use geojson::de::deserialize_feature_collection_str_to_vec;
 use uuid::Uuid;
 
-#[derive(serde::Deserialize, serde::Serialize)]
+#[derive(serde::Deserialize)]
 pub struct AirspaceFeature {
-    #[serde(skip_serializing)]
     pub identifier: Uuid,
-    #[serde(skip_serializing)]
     pub aref: Option<Uuid>,
-    #[serde(alias = "loa_name", alias = "rat_name", skip_serializing)]
+    #[serde(alias = "loa_name", alias = "rat_name")]
     pub group_name: Option<String>,
     pub name: String,
     pub atype: String,
@@ -26,11 +24,9 @@ pub struct AirspaceFeature {
     pub upper_limit_uom: String,
     #[serde(rename = "upperLimitReference")]
     pub upper_limit_reference: String,
+    pub channel: Option<String>,
     pub radius: Option<f64>,
-    #[serde(
-        deserialize_with = "geojson::de::deserialize_geometry",
-        serialize_with = "geojson::ser::serialize_geometry"
-    )]
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     pub geometry: Geometry,
 }
 
@@ -53,10 +49,6 @@ pub fn parse_airspace(text: &String) -> (Vec<AirspaceFeature>, String) {
         deserialize_feature_collection_str_to_vec(text).expect("can't deserialize airspace data");
 
     (features, airac_date)
-}
-
-pub fn serialize_airspace(features: &Vec<&AirspaceFeature>) -> String {
-    geojson::ser::to_feature_collection_string(features).unwrap()
 }
 
 pub fn parse_loa(text: &String) -> Vec<AirspaceFeature> {

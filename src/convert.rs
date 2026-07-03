@@ -5,6 +5,8 @@ use std::fmt::Write;
 use chrono::Utc;
 use geo::Point;
 use geo::geometry::Geometry;
+use geojson::feature::Id;
+use geojson::{Feature, FeatureCollection, GeometryValue};
 use textwrap::{fill, indent};
 use uuid::Uuid;
 
@@ -38,6 +40,10 @@ pub fn make_air_filter(
 
         !exclude
     }
+}
+
+pub fn oa_type(_feature: &AirspaceFeature, _settings: &Settings) -> String {
+    "G".to_string()
 }
 
 fn degrees_to_dms(degrees: f64) -> (u32, u32, u32) {
@@ -133,6 +139,7 @@ pub fn openair(
     settings: &Settings,
     airac_date: &str,
     user_agent: &str,
+    oatypes: Vec<String>,
 ) -> Result<String, fmt::Error> {
     let mut s = "".to_string();
 
@@ -144,9 +151,9 @@ pub fn openair(
         &settings,
     )?;
 
-    for a in airspace {
+    for (a, oa) in airspace.iter().zip(oatypes.into_iter()) {
         write!(s, "*\n")?;
-        write!(s, "AC G\n")?;
+        write!(s, "AC {}\n", oa)?;
         write!(s, "AN {}\n", a.name)?;
         write!(
             s,
@@ -160,5 +167,33 @@ pub fn openair(
         )?;
         write_geometry(&mut s, &a)?;
     }
-    Ok("openair".to_string())
+    Ok(s)
+}
+
+pub fn serialize_airspace(features: &Vec<&AirspaceFeature>, oatypes: Vec<String>) -> String {
+    let feature_collection: FeatureCollection = features
+        .iter()
+        .zip(oatypes.into_iter())
+        .map(|(f, oa)| {
+            let mut jf = Feature::from(GeometryValue::from(&f.geometry));
+            jf.id = Some(Id::String(f.identifier.to_string()));
+            jf.set_property("name", f.name.as_str());
+            jf.set_property("atype", f.atype.as_str());
+            if let Some(classification) = &f.classification {
+                jf.set_property("classification", classification.as_str());
+            }
+            jf.set_property("oatype", oa);
+            jf.set_property("lowerLimit", f.lower_limit);
+            jf.set_property("lowerLimit_uom", f.lower_limit_uom.as_str());
+            jf.set_property("lowerLimit_reference", f.lower_limit_reference.as_str());
+            jf.set_property("upperLimit", f.upper_limit);
+            jf.set_property("upperLimit_uom", f.upper_limit_uom.as_str());
+            jf.set_property("upperLimit_reference", f.upper_limit_reference.as_str());
+            if let Some(channel) = &f.channel {
+                jf.set_property("channel", channel.as_str());
+            }
+            jf
+        })
+        .collect();
+    feature_collection.to_string()
 }
