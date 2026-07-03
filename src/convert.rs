@@ -194,7 +194,13 @@ pub fn openair(
     for (a, oa) in airspace.iter().zip(oatypes.into_iter()) {
         write!(s, "*\n")?;
         write!(s, "AC {}\n", oa)?;
-        write!(s, "AN {}\n", a.name)?;
+        if settings.radio == "yes"
+            && let Some(channel) = &a.channel
+        {
+            write!(s, "AN {} {}\n", a.name, channel)?;
+        } else {
+            write!(s, "AN {}\n", a.name)?;
+        };
         write!(
             s,
             "AL {}\n",
