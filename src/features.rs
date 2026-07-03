@@ -25,6 +25,7 @@ pub struct AirspaceFeature {
     #[serde(rename = "upperLimitReference")]
     pub upper_limit_reference: String,
     pub channel: Option<String>,
+    pub status: Option<String>,
     pub radius: Option<f64>,
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     pub geometry: Geometry,

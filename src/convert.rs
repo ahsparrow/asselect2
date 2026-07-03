@@ -63,7 +63,13 @@ pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
     match feature.atype.as_str() {
         "ATZ" => oa_setting(&settings.atz),
         "CTA" | "CTR" | "TMA" => feature.classification.as_ref().unwrap().to_string(),
-        "D" => "Q".to_string(),
+        "D" => {
+            if feature.status.as_deref() == Some("ACTIVE") {
+                "Q".to_string()
+            } else {
+                "G".to_string()
+            }
+        }
         "DZ" => "Q".to_string(),
         "GLIDER" => oa_setting(&settings.glider),
         "GVS" | "HIRTA" | "LASER" => oa_setting(&settings.hirta_gvs),
@@ -229,6 +235,9 @@ pub fn serialize_airspace(features: &Vec<&AirspaceFeature>, oatypes: Vec<String>
             jf.set_property("upperLimit_reference", f.upper_limit_reference.as_str());
             if let Some(channel) = &f.channel {
                 jf.set_property("channel", channel.as_str());
+            }
+            if let Some(status) = &f.status {
+                jf.set_property("status", status.as_str());
             }
             jf
         })
