@@ -206,7 +206,7 @@ fn main_view(
 
             // make openair data
             let od = openair(
-                &airspace_features,
+                &airspace,
                 &untracked_settings,
                 &airac_date_string,
                 &user_agent,

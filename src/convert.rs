@@ -24,6 +24,23 @@ pub fn normalise_limit(limit: i32, _uom: &str, reference: &str) -> i32 {
     }
 }
 
+fn oa_setting(setting: &str) -> String {
+    match setting {
+        "classa" => "A".to_string(),
+        "classb" => "B".to_string(),
+        "classc" => "C".to_string(),
+        "classd" => "D".to_string(),
+        "classe" => "E".to_string(),
+        "classf" => "F".to_string(),
+        "classg" => "G".to_string(),
+        "ctr" => "CTR".to_string(),
+        "danger" => "Q".to_string(),
+        "glider" => "W".to_string(),
+        "restricted" => "R".to_string(),
+        _ => "UNKNOWN".to_string(),
+    }
+}
+
 pub fn make_air_filter(
     settings: &Settings,
     replace_ids: &HashSet<&Uuid>,
@@ -42,8 +59,29 @@ pub fn make_air_filter(
     }
 }
 
-pub fn oa_type(_feature: &AirspaceFeature, _settings: &Settings) -> String {
-    "G".to_string()
+pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
+    match feature.atype.as_str() {
+        "ATZ" => oa_setting(&settings.atz),
+        "CTA" | "CTR" | "TMA" => feature.classification.as_ref().unwrap().to_string(),
+        "D" => "Q".to_string(),
+        "DZ" => "Q".to_string(),
+        "GLIDER" => oa_setting(&settings.glider),
+        "GVS" | "HIRTA" | "LASER" => oa_setting(&settings.hirta_gvs),
+        "ILS" => match settings.ils.as_str() {
+            "asatz" => oa_setting(&settings.atz),
+            _ => oa_setting(&settings.ils),
+        },
+        "MATZ" => "MATZ".to_string(),
+        "MICROLIGHT" => oa_setting(&settings.microlight),
+        "NGSA" | "TRAG" => "W".to_string(),
+        "P" => "P".to_string(),
+        "R" => "R".to_string(),
+        "RMZ" => "RMZ".to_string(),
+        "TMZ" => "TMZ".to_string(),
+        "TRAINING" => oa_setting(&settings.unlicensed),
+
+        _ => "UNKNOWN".to_string(),
+    }
 }
 
 fn degrees_to_dms(degrees: f64) -> (u32, u32, u32) {
@@ -135,7 +173,7 @@ fn write_geometry(buf: &mut String, feature: &AirspaceFeature) -> Result<(), fmt
 }
 
 pub fn openair(
-    airspace: &Vec<AirspaceFeature>,
+    airspace: &Vec<&AirspaceFeature>,
     settings: &Settings,
     airac_date: &str,
     user_agent: &str,
