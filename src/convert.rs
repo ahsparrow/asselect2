@@ -77,14 +77,10 @@ pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
             "asatz" => oa_setting(&settings.atz),
             _ => oa_setting(&settings.ils),
         },
-        "MATZ" => "MATZ".to_string(),
         "MICROLIGHT" => oa_setting(&settings.microlight),
         "NGSA" | "TRAG" => "W".to_string(),
-        "P" => "P".to_string(),
-        "R" => "R".to_string(),
-        "RMZ" => "RMZ".to_string(),
-        "TMZ" => "TMZ".to_string(),
         "TRAINING" => oa_setting(&settings.unlicensed),
+        "MATZ" | "P" | "R" | "RMZ" | "TMZ" => feature.atype.clone(),
 
         _ => "UNKNOWN".to_string(),
     }
