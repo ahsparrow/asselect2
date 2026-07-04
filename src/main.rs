@@ -183,7 +183,13 @@ fn main_view(
                 .get_rat()
                 .contains(a.group_name.as_ref().unwrap())
         });
-        airspace.extend(rat);
+
+        // Add RA(T)s
+        if untracked_settings.format == "ratonly" {
+            airspace = rat.collect();
+        } else {
+            airspace.extend(rat);
+        }
 
         // OpenAir types
         let oatypes: Vec<String> = airspace
