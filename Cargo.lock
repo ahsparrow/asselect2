@@ -71,6 +71,7 @@ dependencies = [
  "chrono",
  "codee",
  "console_error_panic_hook",
+ "futures",
  "geo",
  "geojson",
  "gloo",

@@ -1,6 +1,7 @@
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 use codee::string::JsonSerdeCodec;
+use futures::join;
 use gloo::file::{Blob, ObjectUrl};
 use gloo::net::http::Request;
 use leptos::ev;
@@ -24,11 +25,30 @@ mod convert;
 mod features;
 mod settings;
 
+#[derive(Clone, Debug)]
+struct OverlayData {
+    overlay_195: Option<String>,
+    overlay_105: Option<String>,
+    overlay_atzdz: Option<String>,
+}
+
 fn app() -> impl IntoView {
     // Reactive data getters
     let async_airspace = LocalResource::new(|| fetch_data("airspace.geojson"));
     let async_loa = LocalResource::new(|| fetch_data("loa.geojson"));
     let async_rat = LocalResource::new(|| fetch_data("rat.geojson"));
+
+    let async_overlay = LocalResource::new(|| async {
+        let overlay_195 = fetch_data("overlay_195.txt");
+        let overlay_105 = fetch_data("overlay_105.txt");
+        let overlay_atzdz = fetch_data("overlay_atzdz.txt");
+        let (o_195, o_105, o_atzdz) = join!(overlay_195, overlay_105, overlay_atzdz);
+        OverlayData {
+            overlay_195: o_195,
+            overlay_105: o_105,
+            overlay_atzdz: o_atzdz,
+        }
+    });
 
     move || -> AnyView {
         if let (Some(airspace), Some(loa), Some(rat)) =
@@ -40,8 +60,15 @@ fn app() -> impl IntoView {
                 let rat_features = parse_rat(&rat_text);
 
                 // Create reactive view
-                let view_fn =
-                    move || main_view(airspace_features, loa_features, rat_features, airac_date);
+                let view_fn = move || {
+                    main_view(
+                        airspace_features,
+                        loa_features,
+                        rat_features,
+                        airac_date,
+                        async_overlay,
+                    )
+                };
                 view_fn().into_any()
             } else {
                 p().child("Error getting airspace data").into_any()
@@ -125,6 +152,7 @@ fn main_view(
     loa_features: Vec<AirspaceFeature>,
     rat_features: Vec<AirspaceFeature>,
     airac_date: String,
+    overlay: LocalResource<OverlayData>,
 ) -> impl IntoView {
     let glider_names = get_glider_names(&airspace_features);
     let exclusive_loas = get_loa_names(&loa_features);
@@ -184,7 +212,6 @@ fn main_view(
                 .contains(a.group_name.as_ref().unwrap())
         });
 
-        // Add RA(T)s
         if untracked_settings.format == "ratonly" {
             airspace = rat.collect();
         } else {
@@ -211,26 +238,53 @@ fn main_view(
                 .unwrap_or_default();
 
             // make openair data
-            let od = openair(
-                &airspace,
-                &untracked_settings,
-                &airac_date_string,
-                &user_agent,
-                oatypes,
-            );
+            let openair_data = match untracked_settings.format.as_str() {
+                "openair" | "competition" | "ratonly" => {
+                    leptos::logging::log!("openair");
+                    openair(
+                        &airspace,
+                        &untracked_settings,
+                        &airac_date_string,
+                        &user_agent,
+                        oatypes,
+                    )
+                    .unwrap_or("* ERROR formatting OpenAir data\n".to_string())
+                }
+                "overlay" => "".to_string(),
+                _ => "* ERROR unknown format option\n".to_string(),
+            };
 
-            let blob = Blob::new(od.expect("format error").as_str());
+            // Get overlay data
+            let overlay_data =
+                if untracked_settings.overlay != "no" && untracked_settings.format != "ratonly" {
+                    if let Some(overlay_data) = overlay.get() {
+                        let x = match untracked_settings.overlay.as_str() {
+                            "fl195" => overlay_data.overlay_195.clone(),
+                            "fl105" => overlay_data.overlay_105.clone(),
+                            "atzdz" => overlay_data.overlay_atzdz.clone(),
+                            _ => None,
+                        };
+                        x.unwrap_or("* ERROR missing overlay data\n".to_string())
+                    } else {
+                        "* ERROR overlay data not loaded\n".to_string()
+                    }
+                } else {
+                    "".to_string()
+                };
+
+            let blob = Blob::new((openair_data + overlay_data.as_str()).as_str());
             let object_url = ObjectUrl::from(blob);
 
-            let fname = if settings.get().format == "overlay" {
-                "overlay.txt".to_string()
-            } else {
-                format!("uk{}.txt", &airac_date_string)
+            let fname = match settings.get().format.as_str() {
+                "overlay" => "overlay.txt".to_string(),
+                _ => format!("uk{}.txt", &airac_date_string),
             };
 
             a.set_download(&fname);
             a.set_href(&object_url);
         }
+
+        // Trigger "donwload"
         a.click();
     };
 

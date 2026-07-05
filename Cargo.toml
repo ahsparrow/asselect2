@@ -7,6 +7,7 @@ edition = "2024"
 chrono = "0.4.45"
 codee = { version = "0.3.5", features = ["json_serde"] }
 console_error_panic_hook = "0.1.7"
+futures = "0.3.32"
 geo = "0.33.1"
 geojson = "1.0.0"
 gloo = { version = "0.11", features = ["net"] }
