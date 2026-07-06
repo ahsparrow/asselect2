@@ -59,3 +59,7 @@ pub fn parse_loa(text: &String) -> Vec<AirspaceFeature> {
 pub fn parse_rat(text: &String) -> Vec<AirspaceFeature> {
     deserialize_feature_collection_str_to_vec(text).expect("can't deserialize RAT data")
 }
+
+pub fn parse_obstacle(text: &str) -> Vec<AirspaceFeature> {
+    deserialize_feature_collection_str_to_vec(text).expect("can't deserialize obstacle data")
+}

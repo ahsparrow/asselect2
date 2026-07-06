@@ -17,7 +17,7 @@ use components::{
     wave_panel::wave_panel,
 };
 use convert::{make_air_filter, oa_type, openair, serialize_airspace};
-use features::{AirspaceFeature, parse_airspace, parse_loa, parse_rat};
+use features::{AirspaceFeature, parse_airspace, parse_loa, parse_obstacle, parse_rat};
 use settings::Settings;
 
 mod components;
@@ -37,6 +37,7 @@ fn app() -> impl IntoView {
     let async_airspace = LocalResource::new(|| fetch_data("airspace.geojson"));
     let async_loa = LocalResource::new(|| fetch_data("loa.geojson"));
     let async_rat = LocalResource::new(|| fetch_data("rat.geojson"));
+    let async_obstacle = LocalResource::new(|| fetch_data("obstacle.geojson"));
 
     let async_overlay = LocalResource::new(|| async {
         let overlay_195 = fetch_data("overlay_195.txt");
@@ -67,6 +68,7 @@ fn app() -> impl IntoView {
                         rat_features,
                         airac_date,
                         async_overlay,
+                        async_obstacle,
                     )
                 };
                 view_fn().into_any()
@@ -153,6 +155,7 @@ fn main_view(
     rat_features: Vec<AirspaceFeature>,
     airac_date: String,
     overlay: LocalResource<OverlayData>,
+    obstacle: LocalResource<Option<String>>,
 ) -> impl IntoView {
     let glider_names = get_glider_names(&airspace_features);
     let exclusive_loas = get_loa_names(&loa_features);
@@ -216,6 +219,17 @@ fn main_view(
             airspace = rat.collect();
         } else {
             airspace.extend(rat);
+        }
+
+        // Append obstacles
+        let mut obstacle_features: Vec<AirspaceFeature> = vec![];
+        if untracked_settings.obstacle != "no" {
+            if let Some(obstacle_response) = obstacle.get() {
+                if let Some(data) = obstacle_response {
+                    obstacle_features.append(&mut parse_obstacle(data.as_str()));
+                    airspace.extend(obstacle_features.iter());
+                }
+            }
         }
 
         // OpenAir types

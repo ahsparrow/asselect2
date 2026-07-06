@@ -81,6 +81,7 @@ pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
         "NGSA" | "TRAG" => "W".to_string(),
         "TRAINING" => oa_setting(&settings.unlicensed),
         "MATZ" | "P" | "R" | "RMZ" | "TMZ" => feature.atype.clone(),
+        "OBST" => oa_setting(&settings.obstacle),
 
         _ => "UNKNOWN".to_string(),
     }
