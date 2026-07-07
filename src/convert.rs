@@ -15,6 +15,17 @@ use crate::settings::Settings;
 
 struct MyPoint(Point);
 
+static INTENSE_DZ: [&str; 8] = [
+    "CHATTERIS DZ",
+    "DUNKESWELL DZ",
+    "HINTON-IN-THE-HEDGES DZ",
+    "LANGAR DZ",
+    "NETHERAVON DZ",
+    "OLD SARUM DZ",
+    "SIBSON DZ",
+    "WESTON-ON-THE-GREEN DZ",
+];
+
 pub fn normalise_limit(limit: i32, _uom: &str, reference: &str) -> i32 {
     match reference {
         "SFC" => 0,
@@ -74,7 +85,13 @@ pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
                 "G".to_string()
             }
         }
-        "DZ" => "Q".to_string(),
+        "DZ" => {
+            if settings.format == "competition" && INTENSE_DZ.contains(&feature.name.as_str()) {
+                "P".to_string()
+            } else {
+                "Q".to_string()
+            }
+        }
         "GLIDER" => oa_setting(&settings.glider),
         "GVS" | "HIRTA" | "LASER" => oa_setting(&settings.hirta_gvs),
         "ILS" => match settings.ils.as_str() {
