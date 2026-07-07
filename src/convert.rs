@@ -63,9 +63,13 @@ pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
     match feature.atype.as_str() {
         "ATZ" => oa_setting(&settings.atz),
         "CTA" | "CTR" | "TMA" => feature.classification.as_ref().unwrap().to_string(),
-        "D" => {
+        "D" | "D*" => {
             if feature.status.as_deref() == Some("ACTIVE") {
-                "Q".to_string()
+                if settings.format == "competition" && feature.atype == "D*" {
+                    "P".to_string()
+                } else {
+                    "Q".to_string()
+                }
             } else {
                 "G".to_string()
             }
