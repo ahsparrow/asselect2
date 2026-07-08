@@ -2,7 +2,8 @@ $asselect_blue: hsl(201, 78%, 50%);
 
 @forward "bulma/sass/utilities" with (
   $family-primary: '"Roboto", sans-serif',
-  $primary: $asselect_blue
+  $primary: $asselect_blue,
+  $link: $asselect_blue,
 );
 
 @forward "bulma/sass/components/card" with (
