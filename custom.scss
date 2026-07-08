@@ -1,0 +1,7 @@
+@use "bulma/sass" with (
+  $family-primary: '"Roboto", sans-serif',
+  $primary: #f00,
+  $card-header-shadow: 0 0,
+);
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,700")
