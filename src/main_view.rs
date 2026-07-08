@@ -218,9 +218,10 @@ pub fn main_view(
                     .class("button is-primary has-text-primary-100")
                     .on(ev::click, download)
                     .child("Get Airspace"),
-                a().id("airac-button")
-                    .class("button is-text is-pulled-right")
+                a()
+                    .class("is-pulled-right")
                     .attr("href", format!("https://www.aurora.nats.co.uk/htmlAIP/Publications/{}-AIRAC/html/index-en-GB.html", airac_date))
+                    .attr("target", "_blank")
                     .child(format!("AIRAC: {}", airac_date)),
             )),
         ),
