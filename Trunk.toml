@@ -1,0 +1,6 @@
+[build]
+#minify = "on_release"
+filehash = false
+
+[tools]
+sass = "1.101.0"

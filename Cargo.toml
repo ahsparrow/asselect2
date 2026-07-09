@@ -16,3 +16,24 @@ leptos-use = { version = "0.18.3", features = ["storage"] }
 serde = "1.0.228"
 textwrap = "0.16.2"
 uuid = { version = "1.23.4", features = ["js", "serde", "v4", "v5"] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+wasm-bindgen = "0.2"
+web-sys = "0.3"
+
+[profile.release]
+# less code to include into binary
+panic = 'abort'
+
+# optimization over all codebase ( better optimization, slower build )
+codegen-units = 1
+
+# optimization for size ( more aggressive )
+opt-level = 'z'
+
+# optimization for size
+# opt-level = 's'
+
+# link time optimization using using whole-program analysis
+lto = true
