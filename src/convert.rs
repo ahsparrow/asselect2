@@ -216,6 +216,7 @@ pub fn openair(
     for (a, oa) in airspace.iter().zip(oatypes.into_iter()) {
         write!(s, "*\n")?;
         write!(s, "AC {}\n", oa)?;
+
         if settings.radio == "yes"
             && let Some(channel) = &a.channel
         {
@@ -223,6 +224,11 @@ pub fn openair(
         } else {
             write!(s, "AN {}\n", a.name)?;
         };
+
+        if let Some(channel) = &a.channel {
+            write!(s, "AF {}\n", channel)?;
+        }
+
         write!(
             s,
             "AL {}\n",
@@ -233,6 +239,7 @@ pub fn openair(
             "AH {}\n",
             format_limit(a.upper_limit, &a.upper_limit_uom, &a.upper_limit_reference)
         )?;
+
         write_geometry(&mut s, &a)?;
     }
     Ok(s)
