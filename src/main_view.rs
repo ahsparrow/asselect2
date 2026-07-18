@@ -18,6 +18,8 @@ use crate::convert::{make_air_filter, oa_type, openair, serialize_airspace};
 use crate::features::{AirspaceFeature, parse_obstacle};
 use crate::settings::Settings;
 
+const STICKY_LOAS: &[&str] = &["CAMBRIDGE RAZ", "WOBURN (NO LANDING)"];
+
 #[derive(Clone, Debug)]
 pub struct OverlayData {
     pub overlay_195: Option<String>,
@@ -62,9 +64,9 @@ pub fn main_view(
         let mut loa: Vec<&AirspaceFeature> = loa_features
             .iter()
             .filter(|a| {
-                untracked_settings
-                    .get_loa()
-                    .contains(a.group_name.as_ref().unwrap())
+                let loa_name = a.group_name.as_ref().unwrap();
+                untracked_settings.get_loa().contains(loa_name)
+                    || STICKY_LOAS.contains(&loa_name.as_str())
             })
             .collect();
 
@@ -247,6 +249,7 @@ fn get_loa_names(loas: &Vec<AirspaceFeature>) -> BTreeMap<String, Vec<String>> {
     let names: HashSet<&str> = loas
         .into_iter()
         .map(|f| f.group_name.as_ref().unwrap().as_str())
+        .filter(|n| !STICKY_LOAS.contains(n))
         .collect();
 
     // map of LOA name to replacement identifiers
