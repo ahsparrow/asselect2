@@ -147,8 +147,8 @@ pub fn main_view(
             };
 
             // Get overlay data
-            let overlay_data =
-                if untracked_settings.overlay != "no" && untracked_settings.format != "ratonly" {
+            let overlay_data = if untracked_settings.format != "ratonly" {
+                if untracked_settings.overlay != "no" {
                     if let Some(overlay_data) = overlay.get() {
                         let x = match untracked_settings.overlay.as_str() {
                             "fl195" => overlay_data.overlay_195.clone(),
@@ -161,8 +161,11 @@ pub fn main_view(
                         "* ERROR overlay data not loaded\n".to_string()
                     }
                 } else {
-                    "".to_string()
-                };
+                    "* No Alitutude Overlay selected".to_string()
+                }
+            } else {
+                "".to_string()
+            };
 
             let blob = Blob::new((openair_data + overlay_data.as_str()).as_str());
             let object_url = ObjectUrl::from(blob);
