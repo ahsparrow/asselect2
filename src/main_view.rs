@@ -131,43 +131,50 @@ pub fn main_view(
 
             // make openair data
             let openair_data = match untracked_settings.format.as_str() {
-                "openair" | "competition" | "ratonly" => {
-                    leptos::logging::log!("openair");
-                    openair(
-                        &airspace,
-                        &untracked_settings,
-                        &airac_date_string,
-                        &user_agent,
-                        oatypes,
-                    )
-                    .unwrap_or("* ERROR formatting OpenAir data\n".to_string())
-                }
+                "openair" | "competition" | "ratonly" => openair(
+                    &airspace,
+                    &untracked_settings,
+                    &airac_date_string,
+                    &user_agent,
+                    oatypes,
+                )
+                .unwrap_or("* ERROR formatting OpenAir data\n".to_string()),
                 "overlay" => "".to_string(),
                 _ => "* ERROR unknown format option\n".to_string(),
             };
 
             // Get overlay data
-            let overlay_data = if untracked_settings.format != "ratonly" {
-                if untracked_settings.overlay != "no" {
-                    if let Some(overlay_data) = overlay.get() {
-                        let x = match untracked_settings.overlay.as_str() {
-                            "fl195" => overlay_data.overlay_195.clone(),
-                            "fl105" => overlay_data.overlay_105.clone(),
-                            "atzdz" => overlay_data.overlay_atzdz.clone(),
-                            _ => None,
-                        };
-                        x.unwrap_or("* ERROR missing overlay data\n".to_string())
-                    } else {
-                        "* ERROR overlay data not loaded\n".to_string()
-                    }
+            let overlay_data = if untracked_settings.overlay != "no" {
+                if let Some(overlay_data) = overlay.get() {
+                    let x = match untracked_settings.overlay.as_str() {
+                        "atzdz" => overlay_data.overlay_atzdz.clone(),
+                        "bases" => {
+                            if untracked_settings.max_level == "105" {
+                                overlay_data.overlay_105.clone()
+                            } else {
+                                overlay_data.overlay_195.clone()
+                            }
+                        }
+                        _ => None,
+                    };
+                    x.unwrap_or("* ERROR missing overlay data\n".to_string())
                 } else {
-                    "* No Alitutude Overlay selected".to_string()
+                    "* ERROR overlay data not loaded\n".to_string()
                 }
             } else {
-                "".to_string()
+                "* No overlay data selected".to_string()
             };
 
-            let blob = Blob::new((openair_data + overlay_data.as_str()).as_str());
+            // Create output data
+            let data = match untracked_settings.format.as_str() {
+                "overlay" => overlay_data,
+                "openair" | "competition" if untracked_settings.overlay != "no" => {
+                    openair_data + overlay_data.as_str()
+                }
+                _ => openair_data,
+            };
+
+            let blob = Blob::new(data.as_str());
             let object_url = ObjectUrl::from(blob);
 
             let fname = match settings.get().format.as_str() {
