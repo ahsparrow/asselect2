@@ -215,33 +215,54 @@ pub fn openair(
     )?;
 
     for (a, oa) in airspace.iter().zip(oatypes.into_iter()) {
-        write!(s, "*\n")?;
-        write!(s, "AC {}\n", oa)?;
+        // Airspace type
+        let _ = write!(s, "*\n");
+        let _ = write!(s, "AC {}\n", oa);
+
+        // Airspace name
+        let _ = write!(s, "AN {}", a.name);
+
+        let mut qualifiers = Vec::new();
+        if &a.atype == "D*" {
+            qualifiers.push("SI");
+        }
+        if (&a.atype == "D" || &a.atype == "D*")
+            && a.status.as_deref() == Some("AVBL_FOR_ACTIVATION")
+        {
+            qualifiers.push("NOTAM");
+        }
+        if qualifiers.len() > 0 {
+            let _ = write!(s, " ({})", qualifiers.join("/"));
+        }
 
         if settings.radio == "yes"
             && let Some(channel) = &a.channel
         {
-            write!(s, "AN {} {}\n", a.name, channel)?;
-        } else {
-            write!(s, "AN {}\n", a.name)?;
+            let _ = write!(s, " {}", channel);
         };
 
+        let _ = write!(s, "\n");
+
+        // Frequency channel
         if let Some(channel) = &a.channel {
-            write!(s, "AF {}\n", channel)?;
+            let _ = write!(s, "AF {}\n", channel);
         }
 
-        write!(
+        // Lower level
+        let _ = write!(
             s,
             "AL {}\n",
             format_limit(a.lower_limit, &a.lower_limit_uom, &a.lower_limit_reference)
-        )?;
-        write!(
+        );
+
+        // Upper level
+        let _ = write!(
             s,
             "AH {}\n",
             format_limit(a.upper_limit, &a.upper_limit_uom, &a.upper_limit_reference)
-        )?;
+        );
 
-        write_geometry(&mut s, &a)?;
+        let _ = write_geometry(&mut s, &a);
     }
     Ok(s)
 }
