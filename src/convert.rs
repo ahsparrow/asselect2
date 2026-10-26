@@ -292,6 +292,9 @@ pub fn serialize_airspace(features: &Vec<&AirspaceFeature>, oatypes: Vec<String>
             if let Some(status) = &f.status {
                 jf.set_property("status", status.as_str());
             }
+            if let Some(radius) = &f.radius {
+                jf.set_property("radius", *radius);
+            }
             jf
         })
         .collect();
