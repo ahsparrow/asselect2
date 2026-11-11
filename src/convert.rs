@@ -156,7 +156,7 @@ fn header(
         * To the extent possible under law, Alan Sparrow has waived all\n\
         * copyright and related or neighbouring rights to this file. The data\n\
         * in this file is sourced from the UK Aeronautical Information\n\
-        * Package (AIP).\n\
+        * Package, see https://nats-uk.ead-it.com/cms-nats/opencms/en/agb/\n\
         *\n\
         * AIRAC: {}\n\
         * Produced: {}\n\
