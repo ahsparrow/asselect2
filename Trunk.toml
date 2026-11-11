@@ -1,2 +1,10 @@
 [build]
 minify = "on_release"
+
+[[hooks]]
+stage = "post_build"
+command = "sh"
+command_arguments = [
+  "-c",
+  "mkdir $TRUNK_STAGING_DIR/default; cp assets/default_openair.txt $TRUNK_STAGING_DIR/default/openair.txt",
+]
