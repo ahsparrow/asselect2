@@ -5,11 +5,12 @@ use uuid::Uuid;
 
 #[derive(serde::Deserialize)]
 pub struct AirspaceFeature {
-    pub identifier: Uuid,
+    pub id: Uuid,
     pub aref: Option<Uuid>,
     #[serde(alias = "loa_name", alias = "rat_name")]
     pub group_name: Option<String>,
     pub name: String,
+    #[serde(rename = "type")]
     pub atype: String,
     pub classification: Option<String>,
     #[serde(rename = "lowerLimit")]

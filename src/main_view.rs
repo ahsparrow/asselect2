@@ -262,7 +262,7 @@ fn get_loa_names(loas: &Vec<AirspaceFeature>) -> BTreeMap<String, Vec<String>> {
         .filter(|n| !STICKY_LOAS.contains(n))
         .collect();
 
-    // map of LOA name to replacement identifiers
+    // map of LOA name to replacement ids
     let replace_ids: HashMap<String, HashSet<String>> = names
         .iter()
         .map(|n| {

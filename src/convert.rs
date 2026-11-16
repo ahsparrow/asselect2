@@ -57,7 +57,7 @@ pub fn make_air_filter(
     replace_ids: &HashSet<&Uuid>,
 ) -> impl Fn(&&AirspaceFeature) -> bool {
     |a: &&AirspaceFeature| {
-        let exclude = replace_ids.contains(&a.identifier)
+        let exclude = replace_ids.contains(&a.id)
             || a.atype == "GLIDER" && (settings.glider == "no" || settings.home == a.name)
             || a.atype == "MICROLIGHT" && settings.microlight == "no"
             || a.atype == "TRAINING" && settings.unlicensed == "no"
@@ -273,7 +273,7 @@ pub fn serialize_airspace(features: &Vec<&AirspaceFeature>, oatypes: Vec<String>
         .zip(oatypes.into_iter())
         .map(|(f, oa)| {
             let mut jf = Feature::from(GeometryValue::from(&f.geometry));
-            jf.id = Some(Id::String(f.identifier.to_string()));
+            jf.id = Some(Id::String(f.id.to_string()));
             jf.set_property("name", f.name.as_str());
             jf.set_property("atype", f.atype.as_str());
             if let Some(classification) = &f.classification {
