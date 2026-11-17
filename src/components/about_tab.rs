@@ -24,7 +24,7 @@ pub fn about_tab() -> impl IntoView {
             a().class("text-primary").href("https://github.com/ahsparrow/aip_airspace").child("GitHub"),
             " for details.)",
          )),
-        p().child("Third party applications are free to access the data used by ASSelect from these links -"),
+        p().child("Third party applications can use the ASSelect data via these links -"),
         ul().child((
             li().child((
                 "Airspace - ",
