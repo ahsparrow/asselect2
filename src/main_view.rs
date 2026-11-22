@@ -72,11 +72,7 @@ pub fn main_view(
             .collect();
 
         // Airspace volumes to be replaced by LOAs
-        let replace_arefs: HashSet<&Uuid> = loa
-            .iter()
-            .filter(|a| a.aref.is_some())
-            .map(|a| a.aref.as_ref().unwrap())
-            .collect();
+        let replace_arefs: HashSet<&Uuid> = loa.iter().filter_map(|a| a.aref.as_ref()).collect();
 
         // Filter airspace
         let mut airspace: Vec<&AirspaceFeature> = airspace_features
@@ -102,13 +98,12 @@ pub fn main_view(
 
         // Append obstacles
         let mut obstacle_features: Vec<AirspaceFeature> = vec![];
-        if untracked_settings.obstacle != "no" {
-            if let Some(obstacle_response) = obstacle.get() {
-                if let Some(data) = obstacle_response {
-                    obstacle_features.append(&mut parse_obstacle(data.as_str()));
-                    airspace.extend(obstacle_features.iter());
-                }
-            }
+        if untracked_settings.obstacle != "no"
+            && let Some(obstacle_response) = obstacle.get()
+            && let Some(data) = obstacle_response
+        {
+            obstacle_features.append(&mut parse_obstacle(data.as_str()));
+            airspace.extend(obstacle_features.iter());
         }
 
         // OpenAir types
@@ -189,7 +184,7 @@ pub fn main_view(
 
             let fname = match settings.get().format.as_str() {
                 "overlay" => "overlay.txt".to_string(),
-                _ => format!("uk{}.txt", &airac_date_string),
+                _ => format!("uk{}.txt", airac_date_string),
             };
 
             a.set_download(&fname);
@@ -253,7 +248,7 @@ pub fn main_view(
 }
 
 // Get list of RA(T)s (maintaining original order)
-fn get_rat_names(rats: &Vec<AirspaceFeature>) -> Vec<String> {
+fn get_rat_names(rats: &[AirspaceFeature]) -> Vec<String> {
     let mut names: Vec<String> = rats
         .iter()
         .map(|f| f.group_name.as_ref().unwrap().to_string())
@@ -264,10 +259,10 @@ fn get_rat_names(rats: &Vec<AirspaceFeature>) -> Vec<String> {
 }
 
 // Get alphabetically ordered map of LOAs
-fn get_loa_names(loas: &Vec<AirspaceFeature>) -> BTreeMap<String, Vec<String>> {
+fn get_loa_names(loas: &[AirspaceFeature]) -> BTreeMap<String, Vec<String>> {
     // de-duplicated LOA names
     let names: HashSet<&str> = loas
-        .into_iter()
+        .iter()
         .map(|f| f.group_name.as_ref().unwrap().as_str())
         .filter(|n| !STICKY_LOAS.contains(n))
         .collect();
@@ -294,9 +289,7 @@ fn get_loa_names(loas: &Vec<AirspaceFeature>) -> BTreeMap<String, Vec<String>> {
                 n1.to_string(),
                 replace_ids
                     .iter()
-                    .filter(|(n2, other_ids)| {
-                        n1 != *n2 && ids.intersection(&other_ids).count() != 0
-                    })
+                    .filter(|(n2, other_ids)| n1 != *n2 && ids.intersection(other_ids).count() != 0)
                     .map(|(n, _)| n.to_string())
                     .collect(),
             )
@@ -304,15 +297,15 @@ fn get_loa_names(loas: &Vec<AirspaceFeature>) -> BTreeMap<String, Vec<String>> {
         .collect()
 }
 
-fn get_wave_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
+fn get_wave_names(airspace: &[AirspaceFeature]) -> Vec<String> {
     airspace
         .iter()
-        .filter(|a| vec!["NSGA", "TRAG"].contains(&(a.atype.as_str())))
+        .filter(|a| ["NSGA", "TRAG"].contains(&(a.atype.as_str())))
         .map(|a| a.name.to_string())
         .collect()
 }
 
-fn get_glider_names(airspace: &Vec<AirspaceFeature>) -> Vec<String> {
+fn get_glider_names(airspace: &[AirspaceFeature]) -> Vec<String> {
     airspace
         .iter()
         .filter(|a| a.atype == "GLIDER")

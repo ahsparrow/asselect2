@@ -62,8 +62,7 @@ pub fn make_air_filter(
             || a.atype == "GLIDER" && (settings.glider == "no" || settings.home == a.name)
             || a.atype == "MICROLIGHT" && settings.microlight == "no"
             || a.atype == "TRAINING" && settings.unlicensed == "no"
-            || vec!["LASER", "GVS", "HIRTA"].contains(&a.atype.as_str())
-                && settings.hirta_gvs == "no"
+            || ["LASER", "GVS", "HIRTA"].contains(&a.atype.as_str()) && settings.hirta_gvs == "no"
             || (a.atype == "TRAG" || a.atype == "NSGA") && !settings.wave.contains(&a.name)
             || normalise_limit(a.lower_limit, &a.lower_limit_uom, &a.lower_limit_reference)
                 > settings.max_level.parse::<i32>().unwrap_or(0) * 100;
@@ -113,9 +112,9 @@ pub fn oa_type(feature: &AirspaceFeature, settings: &Settings) -> String {
 fn degrees_to_dms(degrees: f64) -> (u32, u32, u32) {
     let mut sec = (degrees * 3600.0).round() as u32;
     let mut min = sec / 60;
-    sec = sec % 60;
+    sec %= 60;
     let deg = min / 60;
-    min = min % 60;
+    min %= 60;
 
     (deg, min, sec)
 }
@@ -161,7 +160,7 @@ fn header(
         * Produced: {}\n\
         * User agent: {}\n\
         {}\n",
-        &indent(
+        indent(
             &fill(
                 license,
                 Options::new(70)
@@ -173,7 +172,7 @@ fn header(
         airac_date,
         timestamp,
         user_agent,
-        &indent(&fill(format!("{:?}", settings).as_str(), 70), "* ")
+        indent(&fill(format!("{:?}", settings).as_str(), 70), "* ")
     )
 }
 
@@ -197,7 +196,7 @@ fn write_geometry(buf: &mut String, feature: &AirspaceFeature) -> Result<(), fmt
         )?,
         Geometry::Polygon(poly) => {
             for p in poly.exterior().points() {
-                write!(buf, "DP {}\n", MyPoint(p))?
+                writeln!(buf, "DP {}", MyPoint(p))?
             }
         }
         _ => (),
@@ -221,13 +220,13 @@ pub fn openair(
         license,
         &Utc::now().to_rfc3339(),
         user_agent,
-        &settings,
+        settings,
     )?;
 
-    for (a, oa) in airspace.iter().zip(oatypes.into_iter()) {
+    for (a, oa) in airspace.iter().zip(oatypes) {
         // Airspace type
-        let _ = write!(s, "*\n");
-        let _ = write!(s, "AC {}\n", oa);
+        let _ = writeln!(s, "*");
+        let _ = writeln!(s, "AC {}", oa);
 
         // Airspace name
         let _ = write!(s, "AN {}", a.name);
@@ -241,7 +240,7 @@ pub fn openair(
         {
             qualifiers.push("NOTAM");
         }
-        if qualifiers.len() > 0 {
+        if !qualifiers.is_empty() {
             let _ = write!(s, " ({})", qualifiers.join("/"));
         }
 
@@ -251,28 +250,28 @@ pub fn openair(
             let _ = write!(s, " {}", channel);
         };
 
-        let _ = write!(s, "\n");
+        let _ = writeln!(s);
 
         // Frequency channel
         if let Some(channel) = &a.channel {
-            let _ = write!(s, "AF {}\n", channel);
+            let _ = writeln!(s, "AF {}", channel);
         }
 
         // Lower level
-        let _ = write!(
+        let _ = writeln!(
             s,
-            "AL {}\n",
+            "AL {}",
             format_limit(a.lower_limit, &a.lower_limit_uom, &a.lower_limit_reference)
         );
 
         // Upper level
-        let _ = write!(
+        let _ = writeln!(
             s,
-            "AH {}\n",
+            "AH {}",
             format_limit(a.upper_limit, &a.upper_limit_uom, &a.upper_limit_reference)
         );
 
-        let _ = write_geometry(&mut s, &a);
+        let _ = write_geometry(&mut s, a);
     }
     Ok(s)
 }
@@ -285,7 +284,7 @@ pub fn serialize_airspace(
 ) -> String {
     let mut feature_collection: FeatureCollection = features
         .iter()
-        .zip(oatypes.into_iter())
+        .zip(oatypes)
         .map(|(f, oa)| {
             let mut jf = Feature::from(GeometryValue::from(&f.geometry));
             jf.id = Some(Id::String(f.id.to_string()));

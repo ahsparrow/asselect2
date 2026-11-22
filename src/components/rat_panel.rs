@@ -8,7 +8,7 @@ pub fn rat_panel(names: Vec<String>) -> impl IntoView {
     let setter = use_context::<WriteSignal<Settings>>().expect("to find setter");
     let getter = use_context::<ReadSignal<Settings>>().expect("to find getter");
 
-    if names.len() > 0 {
+    if !names.is_empty() {
         div()
             .class("columns is-multiline")
             .child(
