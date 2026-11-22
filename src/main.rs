@@ -37,7 +37,7 @@ fn app() -> impl IntoView {
             (async_airspace.get(), async_loa.get(), async_rat.get())
         {
             if let (Some(airspace_text), Some(loa_text), Some(rat_text)) = (airspace, loa, rat) {
-                let (airspace_features, airac_date) = parse_airspace(&airspace_text);
+                let (airspace_features, airac_date, license) = parse_airspace(&airspace_text);
                 let loa_features = parse_loa(&loa_text);
                 let rat_features = parse_rat(&rat_text);
 
@@ -48,6 +48,7 @@ fn app() -> impl IntoView {
                         loa_features,
                         rat_features,
                         airac_date,
+                        license,
                         async_overlay,
                         async_obstacle,
                     )

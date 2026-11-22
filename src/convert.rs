@@ -7,6 +7,7 @@ use geo::Point;
 use geo::geometry::Geometry;
 use geojson::feature::Id;
 use geojson::{Feature, FeatureCollection, GeometryValue};
+use serde_json::Map;
 use textwrap::{fill, indent};
 use uuid::Uuid;
 
@@ -267,8 +268,13 @@ pub fn openair(
     Ok(s)
 }
 
-pub fn serialize_airspace(features: &Vec<&AirspaceFeature>, oatypes: Vec<String>) -> String {
-    let feature_collection: FeatureCollection = features
+pub fn serialize_airspace(
+    features: &Vec<&AirspaceFeature>,
+    oatypes: Vec<String>,
+    airac_date: &str,
+    license: &str,
+) -> String {
+    let mut feature_collection: FeatureCollection = features
         .iter()
         .zip(oatypes.into_iter())
         .map(|(f, oa)| {
@@ -298,5 +304,12 @@ pub fn serialize_airspace(features: &Vec<&AirspaceFeature>, oatypes: Vec<String>
             jf
         })
         .collect();
+
+    let mut fm = Map::new();
+    fm.insert("name".into(), "airspace".into());
+    fm.insert("airac_date".into(), airac_date.into());
+    fm.insert("license".into(), license.into());
+    feature_collection.foreign_members = Some(fm);
+
     feature_collection.to_string()
 }

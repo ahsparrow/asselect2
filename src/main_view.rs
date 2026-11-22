@@ -32,6 +32,7 @@ pub fn main_view(
     loa_features: Vec<AirspaceFeature>,
     rat_features: Vec<AirspaceFeature>,
     airac_date: String,
+    license: String,
     overlay: LocalResource<OverlayData>,
     obstacle: LocalResource<Option<String>>,
 ) -> impl IntoView {
@@ -118,7 +119,15 @@ pub fn main_view(
 
         let a = download_node_ref.get().unwrap();
         if untracked_settings.format == "geojson" {
-            let blob = Blob::new(serialize_airspace(&airspace, oatypes).as_str());
+            let blob = Blob::new(
+                serialize_airspace(
+                    &airspace,
+                    oatypes,
+                    airac_date_string.as_str(),
+                    license.as_str(),
+                )
+                .as_str(),
+            );
             let object_url = ObjectUrl::from(blob);
 
             a.set_download("asselect.geojson");

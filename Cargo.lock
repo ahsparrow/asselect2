@@ -110,6 +110,7 @@ dependencies = [
  "lightningcss",
  "minify-html",
  "serde",
+ "serde_json",
  "textwrap",
  "uuid",
  "wasm-bindgen",

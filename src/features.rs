@@ -32,16 +32,21 @@ pub struct AirspaceFeature {
     pub geometry: Geometry,
 }
 
-pub fn parse_airspace(text: &String) -> (Vec<AirspaceFeature>, String) {
+pub fn parse_airspace(text: &String) -> (Vec<AirspaceFeature>, String, String) {
     // Parse feature collection to get AIRAC date
     let fc = text
         .parse::<FeatureCollection>()
         .expect("invalid airspace GeoJSON");
-    let airac_date = fc
-        .foreign_members
-        .expect("missing foreign members")
+    let fm = fc.foreign_members.expect("missing foreign members");
+    let airac_date = fm
         .get("airac_date")
         .expect("missing AIRAC date")
+        .as_str()
+        .unwrap()
+        .to_string();
+    let license = fm
+        .get("license")
+        .expect("missing license")
         .as_str()
         .unwrap()
         .to_string();
@@ -50,7 +55,7 @@ pub fn parse_airspace(text: &String) -> (Vec<AirspaceFeature>, String) {
     let features =
         deserialize_feature_collection_str_to_vec(text).expect("can't deserialize airspace data");
 
-    (features, airac_date)
+    (features, airac_date, license)
 }
 
 pub fn parse_loa(text: &String) -> Vec<AirspaceFeature> {
