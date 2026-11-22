@@ -144,6 +144,7 @@ pub fn main_view(
                     &airspace,
                     &untracked_settings,
                     &airac_date_string,
+                    &license,
                     &user_agent,
                     oatypes,
                 )

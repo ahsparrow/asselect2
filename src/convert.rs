@@ -8,7 +8,7 @@ use geo::geometry::Geometry;
 use geojson::feature::Id;
 use geojson::{Feature, FeatureCollection, GeometryValue};
 use serde_json::Map;
-use textwrap::{fill, indent};
+use textwrap::{Options, WordSeparator, fill, indent};
 use uuid::Uuid;
 
 use crate::features::AirspaceFeature;
@@ -142,6 +142,7 @@ impl fmt::Display for MyPoint {
 fn header(
     buf: &mut String,
     airac_date: &str,
+    license: &str,
     timestamp: &str,
     user_agent: &str,
     settings: &Settings,
@@ -154,15 +155,21 @@ fn header(
         * I have tried my best to make this data accurate but there will still\n\
         * be errors. Don't blame me if you go somewhere you shouldn't have gone.\n\
         *\n\
-        * To the extent possible under law, Alan Sparrow has waived all\n\
-        * copyright and related or neighbouring rights to this file. The data\n\
-        * in this file is sourced from the UK Aeronautical Information\n\
-        * Package, see https://nats-uk.ead-it.com/cms-nats/opencms/en/agb/\n\
+        {}\n\
         *\n\
         * AIRAC: {}\n\
         * Produced: {}\n\
         * User agent: {}\n\
         {}\n",
+        &indent(
+            &fill(
+                license,
+                Options::new(70)
+                    .break_words(false)
+                    .word_separator(WordSeparator::AsciiSpace)
+            ),
+            "* "
+        ),
         airac_date,
         timestamp,
         user_agent,
@@ -202,6 +209,7 @@ pub fn openair(
     airspace: &Vec<&AirspaceFeature>,
     settings: &Settings,
     airac_date: &str,
+    license: &str,
     user_agent: &str,
     oatypes: Vec<String>,
 ) -> Result<String, fmt::Error> {
@@ -210,6 +218,7 @@ pub fn openair(
     header(
         &mut s,
         airac_date,
+        license,
         &Utc::now().to_rfc3339(),
         user_agent,
         &settings,
