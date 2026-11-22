@@ -1,4 +1,4 @@
-* The default OpenAir file is not longer produced by ASSelect.
+* The default OpenAir file is no longer produced by ASSelect.
 *
 * If you are looking for airspace data to use with your own application
-* please use the new data at https://asselect.uk/airspace.geojson
+* please use the new data from https://asselect.uk/airspace.geojson
