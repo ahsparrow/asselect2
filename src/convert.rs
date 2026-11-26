@@ -289,17 +289,17 @@ pub fn serialize_airspace(
             let mut jf = Feature::from(GeometryValue::from(&f.geometry));
             jf.id = Some(Id::String(f.id.to_string()));
             jf.set_property("name", f.name.as_str());
-            jf.set_property("atype", f.atype.as_str());
+            jf.set_property("type", f.atype.as_str());
             if let Some(classification) = &f.classification {
                 jf.set_property("classification", classification.as_str());
             }
             jf.set_property("oatype", oa);
             jf.set_property("lowerLimit", f.lower_limit);
             jf.set_property("lowerLimit_uom", f.lower_limit_uom.as_str());
-            jf.set_property("lowerLimit_reference", f.lower_limit_reference.as_str());
+            jf.set_property("lowerLimitReference", f.lower_limit_reference.as_str());
             jf.set_property("upperLimit", f.upper_limit);
             jf.set_property("upperLimit_uom", f.upper_limit_uom.as_str());
-            jf.set_property("upperLimit_reference", f.upper_limit_reference.as_str());
+            jf.set_property("upperLimitReference", f.upper_limit_reference.as_str());
             if let Some(channel) = &f.channel {
                 jf.set_property("channel", channel.as_str());
             }
