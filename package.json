@@ -4,6 +4,7 @@
   },
 
   "scripts": {
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy --env \\\"\\\"",
+    "stage": "wrangler deploy --env staging"
   }
 }

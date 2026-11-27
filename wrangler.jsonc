@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "asselect2-test",
+  "name": "asselect",
   "compatibility_date": "2026-06-11",
 
   "assets": {
@@ -9,8 +9,23 @@
 
   "routes": [
     {
-      "pattern": "test.asselect.uk",
+      "pattern": "asselect.uk",
       "custom_domain": true
-    } 
-  ]
+    },
+    {
+      "pattern": "www.asselect.uk",
+      "custom_domain": true,
+    }
+  ],
+
+  "env": {
+    "staging": {
+      "routes": [
+        {
+          "pattern": "staging.asselect.uk",
+          "custom_domain": true
+        }
+      ]
+    }
+  }
 }

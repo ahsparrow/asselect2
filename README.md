@@ -19,3 +19,7 @@
 1. Upload the release to Cloudflare
 
     `npm run deploy`
+
+or (to deploy to staging.asselect.uk)
+
+    `npm run stage`
